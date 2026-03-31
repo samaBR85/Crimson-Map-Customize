@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Download, Globe, Map as MapIcon, Palette, Shield, Wind, Monitor, ChevronDown, Check } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Download, Upload, Globe, Map as MapIcon, Palette, Shield, Wind, Monitor, ChevronDown, Check } from 'lucide-react';
 
 // --- DADOS INICIAIS ---
 const RAW_DATA = [
@@ -138,6 +138,7 @@ const presetsMap = generatePresets(RAW_DATA);
 export default function App() {
   const [colors, setColors] = useState(presetsMap.Vanilla);
   const [activePreset, setActivePreset] = useState('Vanilla');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleColorChange = (index: number, newColor: string) => {
     const newColors = [...colors];
@@ -149,6 +150,36 @@ export default function App() {
   const applyPreset = (presetName: string) => {
     setColors([...presetsMap[presetName]]);
     setActivePreset(presetName);
+  };
+
+  const importJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        if (Array.isArray(json)) {
+          const newColors = json.map((item: any) => {
+            if (typeof item === 'string') return item;
+            return item.mod || "#000000";
+          });
+          
+          const finalColors = [...colors];
+          newColors.forEach((c, i) => {
+            if (i < finalColors.length) finalColors[i] = c;
+          });
+          
+          setColors(finalColors);
+          setActivePreset('Custom');
+        }
+      } catch (err) {
+        console.error("Import error:", err);
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const exportJson = () => {
@@ -236,6 +267,21 @@ export default function App() {
               <ChevronDown className="w-4 h-4" />
             </div>
           </div>
+
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#21262d] hover:bg-[#30363d] text-gray-200 text-sm font-bold rounded-md border border-[#30363d] transition-all"
+          >
+            <Upload className="w-4 h-4" />
+            Import JSON
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={importJson} 
+            accept=".json" 
+            className="hidden" 
+          />
           
           <button 
             onClick={exportJson}

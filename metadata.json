@@ -1,0 +1,5 @@
+{
+  "name": "Crimson Map Customizer",
+  "description": "A visual tool to customize map colors for Crimson Desert and generate colors.json configuration files.",
+  "requestFramePermissions": []
+}

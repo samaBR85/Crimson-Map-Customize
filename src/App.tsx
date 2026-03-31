@@ -327,74 +327,199 @@ export default function App() {
                   <feDropShadow dx="0" dy="8" stdDeviation="6" floodColor="#000" floodOpacity="0.25" />
                 </filter>
                 <filter id="glow">
-                  <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                   <feMerge>
                     <feMergeNode in="coloredBlur"/>
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
                 </filter>
-                <pattern id="farm-pattern" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(25)">
-                  <rect width="60" height="60" fill="var(--c-bg)" opacity="0.3" />
-                  <path d="M 60 0 L 0 0 0 60" fill="none" stroke="var(--c-road)" strokeWidth="1.5" opacity="0.5"/>
+                {/* Paper texture pattern */}
+                <pattern id="paper-texture" width="400" height="400" patternUnits="userSpaceOnUse">
+                  <rect width="400" height="400" fill="var(--c-bg)" />
+                  <circle cx="100" cy="100" r="1" fill="black" opacity="0.03" />
+                  <circle cx="300" cy="250" r="1.5" fill="black" opacity="0.02" />
+                  <path d="M 0 0 L 400 400 M 400 0 L 0 400" stroke="black" strokeWidth="0.5" opacity="0.01" />
+                </pattern>
+                {/* Hatching for mountains */}
+                <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.3" />
                 </pattern>
               </defs>
 
-              <rect width="100%" height="100%" fill="var(--c-bg)" className="transition-colors duration-700" />
+              {/* Background Terrain */}
+              <rect width="100%" height="100%" fill="url(#paper-texture)" className="transition-colors duration-700" />
               
+              {/* === WATER (SEA & COASTLINE) === */}
               <g className="transition-colors duration-700">
-                <path d="M -100,1200 L 900,1200 Q 850,950 650,850 Q 450,800 350,600 Q 200,450 -100,550 Z" fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="6" strokeLinejoin="round" />
-                <path d="M 850,-100 Q 900,150 750,250 Q 600,350 800,500 T 600,650 T 550,800 Q 600,850 650,850" fill="none" stroke="var(--c-sea-str)" strokeWidth="48" opacity="0.6" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M 850,-100 Q 900,150 750,250 Q 600,350 800,500 T 600,650 T 550,800 Q 600,850 650,850" fill="none" stroke="var(--c-sea)" strokeWidth="38" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M 600,650 Q 750,700 900,750 T 1100,900" fill="none" stroke="var(--c-sea)" strokeWidth="18" strokeLinecap="round" />
-                <path d="M 350,600 Q 250,650 150,750" fill="none" stroke="var(--c-sea)" strokeWidth="14" strokeLinecap="round" />
-                <path d="M 150,800 Q 180,750 250,850 T 150,950 Z" fill="var(--c-land)" stroke="var(--c-land-str)" strokeWidth="3" />
-                <path d="M 800,900 Q 850,850 900,1050 T 750,1100 Z" fill="var(--c-land)" stroke="var(--c-land-str)" strokeWidth="3" />
+                {/* Deep Sea */}
+                <path 
+                  d="M 0,0 L 420,0 C 380,150 480,300 350,450 C 250,600 400,750 280,900 C 180,1000 300,1080 0,1080 Z" 
+                  fill="var(--c-sea)" opacity="0.3"
+                />
+                {/* Coastline Depth & Wave Lines */}
+                <path 
+                  d="M 15,0 C 390,160 490,310 360,460 C 260,610 410,760 290,910 C 190,1010 310,1080 15,1080" 
+                  fill="none" stroke="var(--c-sea-str)" strokeWidth="2" opacity="0.2"
+                />
+                <path 
+                  d="M 25,0 C 400,170 500,320 370,470 C 270,620 420,770 300,920 C 200,1020 320,1080 25,1080" 
+                  fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.1" strokeDasharray="20,10"
+                />
+                {/* Main Jagged Coastline */}
+                <path 
+                  d="M 0,0 L 400,0 C 360,150 460,300 330,450 C 230,600 380,750 260,900 C 160,1000 280,1080 0,1080 Z" 
+                  fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="4"
+                />
+                
+                {/* Coastal Islands & Ripples */}
+                <path d="M 450,200 C 470,180 500,210 480,230 C 460,250 430,220 450,200 Z" fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="2" />
+                <path d="M 440,190 C 470,160 520,210 490,240" fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.2" />
+                
+                <path d="M 380,700 C 400,680 430,710 410,730 C 390,750 360,720 380,700 Z" fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="2" />
+                <path d="M 370,690 C 400,660 450,710 420,740" fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.2" />
+                
+                {/* Inland Lake & Complex River System */}
+                <path 
+                  d="M 1450,750 C 1500,700 1650,700 1700,780 C 1750,860 1650,980 1500,950 C 1400,920 1350,820 1450,750 Z" 
+                  fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="3"
+                />
+                <path d="M 1470,770 C 1520,740 1620,740 1660,800" fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.3" />
+                
+                <path 
+                  d="M 1450,750 C 1350,730 1250,800 1150,770 C 1050,740 950,830 850,800 C 750,770 650,850 550,820" 
+                  fill="none" stroke="var(--c-sea)" strokeWidth="10" strokeLinecap="round" opacity="0.5"
+                />
+                {/* River Ripples */}
+                <path d="M 1100,760 L 1130,765 M 1000,780 L 1030,785 M 900,800 L 930,805" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.3" />
               </g>
 
-              <g fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="3" opacity="0.4" className="transition-colors duration-700">
-                <path d="M 650,-100 Q 700,50 650,180 T 600,350 T 680,450 T 550,550 L 420,500 T 450,250 Z" />
-                <path d="M 200,600 Q 250,550 350,600 T 300,750 Z" />
-                <path d="M 1300,-100 Q 1200,150 1350,300 T 1200,450 T 1400,600 L 1550,500 T 1600,150 Z" />
-                <path d="M 1700,300 Q 1750,500 1900,550 L 2000,500 L 2000,200 Z" />
-                <path d="M 1600,700 Q 1550,850 1700,950 T 1900,900 T 2000,1050 L 2000,650 Z" />
+              {/* === TERRAIN CONTOUR LINES (TOPOGRAPHY) === */}
+              <g fill="none" stroke="var(--c-land-str)" strokeWidth="1" opacity="0.05" className="transition-colors duration-700">
+                <path d="M 500,300 C 700,250 1000,250 1200,400 C 1400,550 1300,800 1100,900 C 900,1000 600,950 500,800" />
+                <path d="M 550,350 C 750,300 1050,300 1250,450 C 1450,600 1350,850 1150,950 C 950,1050 650,1000 550,850" />
               </g>
 
-              <g className="transition-colors duration-700" transform="translate(1200, 550)">
-                <path d="M 50,250 L 180,100 L 400,180 L 500,300 L 350,450 L 100,380 Z" fill="var(--c-land)" stroke="var(--c-road)" strokeWidth="8" strokeLinejoin="round" />
-                <path d="M 50,250 L 180,100 L 400,180 L 500,300 L 350,450 L 100,380 Z" fill="url(#farm-pattern)" />
-                <path d="M 130,170 L 350,350 M 250,130 L 300,400 M 320,150 L 450,250 M 150,300 L 400,220 M 100,270 L 300,220" stroke="var(--c-road)" strokeWidth="5" />
-              </g>
-
-              <g stroke="var(--c-road)" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" className="transition-colors duration-700">
-                <path d="M 1250,800 Q 1100,850 1050,950 T 900,900" />
-                <path d="M 1250,930 Q 1150,930 1100,1050 T 900,1100" />
-                <path d="M 1700,850 Q 1850,900 2000,850" />
-                <path d="M 1400,650 Q 1300,500 1250,450 T 1200,250 T 1000,200" />
-                <path d="M 850,50 Q 1050,150 1200,50" />
-                <path d="M 300,550 Q 380,500 500,530 T 650,480" />
-                <path d="M 50,650 Q 200,750 350,650 T 450,800" />
-              </g>
-
-              <g fill="var(--c-land-str)" fontFamily="Georgia, serif" letterSpacing="14" fontWeight="bold" opacity="0.8" className="transition-colors duration-700">
-                <text x="350" y="250" fontSize="38" transform="rotate(-28 350 250)">THE</text>
-                <text x="350" y="300" fontSize="38" transform="rotate(-28 350 300)">WITCHWOODS</text>
-                <text x="1450" y="320" fontSize="34" letterSpacing="18">HERNAND</text>
-                <text x="1420" y="370" fontSize="34" letterSpacing="18">HIGHLANDS</text>
-              </g>
-
+              {/* === MOUNTAINS (HIGHLY DETAILED RIDGES & CRAGS) === */}
               <g className="transition-colors duration-700">
-                <g transform="translate(480, 320)" filter="url(#shadow)">
-                  <circle cx="0" cy="0" r="40" fill="var(--c-bg)" stroke="var(--c-land-str)" strokeWidth="3" />
-                  <g fill="var(--c-religion)">
-                    <path d="M 0,-18 Q 12,-6 18,0 Q 12,6 0,18 Q -12,6 -18,0 Q -12,-6 0,-18 Z" />
-                    <path d="M 0,-18 Q 12,-6 18,0 Q 12,6 0,18 Q -12,6 -18,0 Q -12,-6 0,-18 Z" transform="rotate(45)" />
-                    <path d="M 0,-18 Q 12,-6 18,0 Q 12,6 0,18 Q -12,6 -18,0 Q -12,-6 0,-18 Z" transform="rotate(90)" />
-                    <path d="M 0,-18 Q 12,-6 18,0 Q 12,6 0,18 Q -12,6 -18,0 Q -12,-6 0,-18 Z" transform="rotate(135)" />
+                {/* North Range Peaks */}
+                <g transform="translate(650, 80)">
+                  {/* Peak 1 with Ridges */}
+                  <path d="M 0,120 L 60,20 L 120,120 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
+                  <path d="M 60,20 L 50,60 L 65,80 L 45,120" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
+                  <path d="M 60,20 L 70,50 L 55,70 L 65,90" fill="none" stroke="var(--c-mountain-str)" strokeWidth="0.5" opacity="0.3" />
+                  <path d="M 60,20 L 80,60 L 60,80 L 40,60 Z" fill="white" opacity="0.3" />
+                  <path d="M 60,20 L 120,120 L 60,120 Z" fill="black" opacity="0.15" />
+                  
+                  {/* Peak 2 with Ridges */}
+                  <path d="M 100,140 L 180,40 L 260,140 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
+                  <path d="M 180,40 L 170,80 L 190,100 L 175,140" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
+                  <path d="M 180,40 L 260,140 L 180,140 Z" fill="black" opacity="0.15" />
+                  
+                  {/* Peak 3 with Ridges */}
+                  <path d="M 240,120 L 320,20 L 400,120 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
+                  <path d="M 320,20 L 310,60 L 330,80 L 315,120" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
+                  <path d="M 320,20 L 400,120 L 320,120 Z" fill="black" opacity="0.15" />
+                </g>
+
+                {/* East Range Peaks */}
+                <g transform="translate(1550, 250)">
+                  <path d="M 0,180 L 80,30 L 160,180 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
+                  <path d="M 80,30 L 70,80 L 90,120 L 75,180" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
+                  <path d="M 80,30 L 160,180 L 80,180 Z" fill="black" opacity="0.15" />
+                </g>
+              </g>
+
+              {/* === TERRAIN & BIOMES (ORGANIC TEXTURES) === */}
+              <g className="transition-colors duration-700">
+                {/* Swamp Area with Reeds */}
+                <g transform="translate(1200, 200)" opacity="0.2">
+                  <path d="M 0,0 C 50,-20 100,20 150,0 C 200,-20 250,20 300,0" fill="none" stroke="var(--c-land-str)" strokeWidth="2" />
+                  <path d="M 10,20 C 60,0 110,40 160,20 C 210,0 260,40 310,20" fill="none" stroke="var(--c-land-str)" strokeWidth="2" />
+                  {/* Reeds */}
+                  <line x1="50" y1="-10" x2="55" y2="-25" stroke="var(--c-land-str)" strokeWidth="1" />
+                  <line x1="150" y1="10" x2="155" y2="-5" stroke="var(--c-land-str)" strokeWidth="1" />
+                  <line x1="250" y1="-10" x2="255" y2="-25" stroke="var(--c-land-str)" strokeWidth="1" />
+                </g>
+                
+                {/* Organic Forest Blobs */}
+                <g fill="var(--c-land-str)" opacity="0.25">
+                  {/* West Forest Blob */}
+                  <path d="M 620,450 C 600,430 580,460 590,490 C 600,520 640,530 670,510 C 700,490 680,440 650,430 C 630,420 620,450 620,450 Z" />
+                  {/* Internal detail */}
+                  <path d="M 620,460 L 630,470 M 650,480 L 660,490" stroke="var(--c-bg)" strokeWidth="1" opacity="0.5" />
+                  
+                  {/* East Forest Blob */}
+                  <path d="M 1120,600 C 1100,580 1080,610 1090,640 C 1100,670 1140,680 1170,660 C 1200,640 1180,590 1150,580 C 1130,570 1120,600 1120,600 Z" />
+                </g>
+
+                {/* Grass Clusters */}
+                <g stroke="var(--c-land-str)" strokeWidth="1" opacity="0.15" fill="none">
+                  <path d="M 800,300 L 805,290 M 805,290 L 810,300" />
+                  <path d="M 820,310 L 825,300 M 825,300 L 830,310" />
+                  <path d="M 1000,700 L 1005,690 M 1005,690 L 1010,700" />
+                </g>
+
+                {/* Settlement Clusters (Towns) */}
+                <g fill="var(--c-danger)" opacity="0.6" stroke="var(--c-bg)" strokeWidth="1">
+                  {/* Town 1 */}
+                  <rect x="980" y="430" width="12" height="12" rx="1" />
+                  <rect x="995" y="435" width="8" height="8" rx="1" />
+                  <rect x="985" y="445" width="10" height="10" rx="1" />
+                  <path d="M 980,430 L 986,424 L 992,430 Z" /> {/* Roof */}
+                  
+                  {/* Castle / Keep */}
+                  <g transform="translate(1480, 720)">
+                    <rect x="0" y="0" width="20" height="20" rx="1" />
+                    <rect x="-5" y="-10" width="10" height="30" rx="1" />
+                    <rect x="15" y="-10" width="10" height="30" rx="1" />
+                    <path d="M -5,-10 L 0,-15 L 5,-10 Z" />
+                    <path d="M 15,-10 L 20,-15 L 25,-10 Z" />
                   </g>
                 </g>
-                <g transform="translate(1550, 800) rotate(-40)" filter="url(#glow)">
-                  <polygon points="0,-20 -14,14 0,7 14,14" fill="#3b82f6" stroke="#1e3a8a" strokeWidth="2.5" />
-                </g>
+              </g>
+
+              {/* === ROADS & TRAILS === */}
+              <g stroke="var(--c-road)" fill="none" strokeLinecap="round" strokeLinejoin="round" className="transition-colors duration-700">
+                {/* Main Arteries */}
+                <path 
+                  d="M 400,350 C 600,400 800,370 1000,500 C 1200,630 1400,600 1600,700" 
+                  strokeWidth="10" opacity="0.8"
+                />
+                <path 
+                  d="M 850,150 C 870,300 830,450 900,600 C 970,750 900,900 950,1050" 
+                  strokeWidth="6" opacity="0.7"
+                />
+                
+                {/* Mountain Trails (Dashed) */}
+                <path d="M 750,150 L 700,100" strokeWidth="2" strokeDasharray="4,4" opacity="0.5" />
+                <path d="M 1650,400 L 1700,350" strokeWidth="2" strokeDasharray="4,4" opacity="0.5" />
+              </g>
+
+              {/* === DECORATIVE ELEMENTS === */}
+              <g transform="translate(1750, 150)" opacity="0.4" stroke="var(--c-land-str)" fill="none">
+                <circle r="60" strokeWidth="2" />
+                <circle r="50" strokeWidth="1" strokeDasharray="2,2" />
+                <path d="M 0,-70 L 10,-50 L 0,-55 L -10,-50 Z" fill="var(--c-land-str)" /> {/* North */}
+                <path d="M 0,70 L 10,50 L 0,55 L -10,50 Z" /> {/* South */}
+                <path d="M 70,0 L 50,10 L 55,0 L 50,-10 Z" /> {/* East */}
+                <path d="M -70,0 L -50,10 L -55,0 L -50,-10 Z" /> {/* West */}
+                <text x="0" y="-80" textAnchor="middle" fontSize="20" fill="var(--c-land-str)" stroke="none">N</text>
+              </g>
+
+              {/* === TEXT (CURVED & STYLIZED) === */}
+              <g fill="var(--c-land-str)" fontFamily="'Georgia', serif" letterSpacing="10" fontWeight="bold" opacity="0.6" className="transition-colors duration-700">
+                <defs>
+                  <path id="textPath" d="M 850,150 Q 1010,100 1170,150" />
+                </defs>
+                <text fontSize="36" textAnchor="middle">
+                  <textPath href="#textPath" startOffset="50%">HERNAND HIGHLANDS</textPath>
+                </text>
+              </g>
+
+              {/* === PLAYER CURSOR (STYLIZED) === */}
+              <g transform="translate(950, 650) rotate(-15)" filter="url(#glow)">
+                <path d="M 0,-24 L -16,16 L 0,8 L 16,16 Z" fill="#3b82f6" stroke="#1e3a8a" strokeWidth="2" />
+                <circle cx="0" cy="0" r="4" fill="white" opacity="0.5" />
               </g>
 
             </svg>

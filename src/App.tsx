@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Download, Upload, Globe, Map as MapIcon, Palette, Shield, Wind, Monitor, ChevronDown, Check } from 'lucide-react';
+import { Download, Upload, Globe, Map as MapIcon, Palette, Shield, Wind, Monitor, ChevronDown, Check, Undo, Redo } from 'lucide-react';
 
 // --- DADOS INICIAIS ---
 const RAW_DATA = [
@@ -34,28 +34,160 @@ const RAW_DATA = [
   {"mod": "#802020", "preset": "preset-worldmap-wanted-region", "vanilla": "_originalColorTint: color, #290303ff;"},
   {"mod": "#290303", "preset": "preset-worldmap-restricted-area-town", "vanilla": "_originalColorTint: color, #802020ff;"},
   {"mod": "#802020", "preset": "preset-worldmap-restricted-area-gameplay-trigger", "vanilla": "_originalColorTint: color, #802020ff;"},
-  {"mod": "#ffffff", "preset": "preset-worldmap-faction-region", "vanilla": "_originalColorTint: color, #ffffffff;"}
+  {"mod": "#ffffff", "preset": "preset-worldmap-faction-region", "vanilla": "_originalColorTint: color, #ffffffff;"},
+  {"mod": "#f5f5f0", "preset": "preset-worldmap-land", "vanilla": "_originalColorTint: color, #f5f5f0ff;"},
+  {"mod": "#3F6073", "preset": "preset-worldmap-region-religion", "vanilla": "_originalColorTint: color, #3F6073ff;"},
+  {"mod": "#6f7778", "preset": "preset-worldmap-overfog-sea-outline", "vanilla": "_mapSeaOutlineColor: color, #6f7778ff;"},
+  {"mod": "#67866e", "preset": "preset-worldmap-faction-region-2", "vanilla": "_originalColorTint: color, #67866e;"},
+  {"mod": "#802020", "preset": "preset-worldmap-restricted-area-town-2", "vanilla": "_originalColorTint: color, #802020ff;"},
+  {"mod": "#802020", "preset": "preset-worldmap-restricted-area-gameplay-trigger-2", "vanilla": "_originalColorTint: color, #802020ff;"}
 ];
 
 const CUSTOM_PALETTES = {
-  CyberPunk: { outline: "#00f0ff", outlineAlt: "#ff003c", sea: "#051024", road: "#fcee0a", mountain: "#7000ff", region: "#39ff14", wanted: "#ff003c", fog: "#1a002a", ui: "#0b0c10", base: "#111827" },
-  RomeroBritto: { outline: "#000000", sea: "#00A8FF", road: "#FF007F", mountain: "#9D00FF", region: "#85E21F", wanted: "#FF0000", fog: "#FFFFFF", ui: "#FFCC00", base: "#FFCC00" },
-  Mondrian: { outline: "#000000", sea: "#FFFFFF", road: "#FFD100", mountain: "#E3000F", region: "#0055A4", wanted: "#E3000F", fog: "#111111", ui: "#F4F4F4", base: "#FFFFFF" },
-  FalloutPipBoy: { outline: "#15d600", sea: "#0a2e05", road: "#15d600", mountain: "#117806", region: "#22ff00", wanted: "#15d600", fog: "#041202", ui: "#041202", base: "#051c03" },
-  GameBoyClassic: { outline: "#0f380f", sea: "#306230", road: "#0f380f", mountain: "#0f380f", region: "#9bbc0f", wanted: "#306230", fog: "#8bac0f", ui: "#9bbc0f", base: "#8bac0f" },
-  Persona5: { outline: "#000000", sea: "#111111", road: "#ffffff", mountain: "#880000", region: "#ffffff", wanted: "#ff0000", fog: "#000000", ui: "#ff0000", base: "#ff0000" },
-  ZeldaBotw: { outline: "#3b312a", sea: "#69aeb8", road: "#dcd0a6", mountain: "#7c8e74", region: "#b6cba1", wanted: "#d04b49", fog: "#e4dec8", ui: "#e2d7b5", base: "#c1cca5" },
-  Skyrim: { outline: "#2a221b", sea: "#c1bba4", road: "#544434", mountain: "#695e53", region: "#82786a", wanted: "#7a3124", fog: "#dcd3bd", ui: "#ebdcc8", base: "#d7cdba" },
-  MirrorsEdge: { outline: "#000000", sea: "#0088ff", road: "#ff0000", mountain: "#cccccc", region: "#ffaa00", wanted: "#ff0000", fog: "#ffffff", ui: "#ffffff", base: "#ffffff" },
-  Doom: { outline: "#ff3300", sea: "#440000", road: "#ffaa00", mountain: "#220000", region: "#cc0000", wanted: "#ff0000", fog: "#110000", ui: "#110000", base: "#551100" },
-  Synthwave: { outline: "#ff00ff", sea: "#000022", road: "#00ffff", mountain: "#220044", region: "#ff00aa", wanted: "#ff0000", fog: "#110022", ui: "#0a0a1a", base: "#110033" },
-  Vaporwave: { outline: "#ff77ff", sea: "#00ffff", road: "#ffff00", mountain: "#aa77ff", region: "#ff00ff", wanted: "#ff0077", fog: "#ffd1dc", ui: "#e0b0ff", base: "#ffb6c1" },
-  ArtDeco: { outline: "#d4af37", sea: "#0a1f1c", road: "#d4af37", mountain: "#112e29", region: "#c5a017", wanted: "#800020", fog: "#000000", ui: "#050f0e", base: "#0a1f1c" },
-  PopArt: { outline: "#000000", sea: "#00ffff", road: "#ff00ff", mountain: "#0000ff", region: "#00ff00", wanted: "#ff0000", fog: "#ffffff", ui: "#ffff00", base: "#ffff00" },
-  EldenRing: { outline: "#8c7b50", sea: "#111a22", road: "#d4af37", mountain: "#2c3539", region: "#7b6a4a", wanted: "#8b0000", fog: "#0a0c10", ui: "#1c1c1c", base: "#24282a" },
-  Noir: { outline: "#000000", sea: "#333333", road: "#ffffff", mountain: "#555555", region: "#888888", wanted: "#ff0000", fog: "#111111", ui: "#222222", base: "#aaaaaa" },
-  WildWest: { outline: "#4a3018", sea: "#8b6b4a", road: "#d2a679", mountain: "#6b4423", region: "#b8860b", wanted: "#8b0000", fog: "#e6ccab", ui: "#d2b48c", base: "#cd853f" },
-  HollowKnight: { outline: "#1a1c23", sea: "#202433", road: "#8b9bb4", mountain: "#13151f", region: "#4a5462", wanted: "#803040", fog: "#0b0c10", ui: "#12141c", base: "#2c3140" }
+  CyberPunk: { 
+    bg: "#050505", sea: "#0a1a2f", seaStr: "#00f0ff", land: "#111827", landStr: "#ff003c", 
+    mountain: "#2d005d", mountainStr: "#7000ff", road: "#fcee0a", roadStr: "#ff003c", 
+    faction: "#39ff14", faction2: "#00ff9f", religion: "#bc13fe", wanted: "#ff003c", 
+    restricted: "#1a002a", danger: "#ff0000", fog: "#1a002a", fog2: "#2a004a", 
+    abyss: "#000000", abyss2: "#050505", abyssBorder: "#7000ff", overfog: "#0a1a2f", 
+    overfogStr: "#00f0ff", heightLine: "#30363d", nonePlay: "#000000", loading: "#0b0c10", ui: "#00f0ff" 
+  },
+  RomeroBritto: { 
+    bg: "#FFCC00", sea: "#00A8FF", seaStr: "#000000", land: "#FFD700", landStr: "#000000", 
+    mountain: "#9D00FF", mountainStr: "#000000", road: "#FF007F", roadStr: "#000000", 
+    faction: "#85E21F", faction2: "#FF5733", religion: "#C70039", wanted: "#FF0000", 
+    restricted: "#581845", danger: "#FFC300", fog: "#FFFFFF", fog2: "#F0F0F0", 
+    abyss: "#000000", abyss2: "#111111", abyssBorder: "#000000", overfog: "#FFCC00", 
+    overfogStr: "#000000", heightLine: "#000000", nonePlay: "#FFCC00", loading: "#FFCC00", ui: "#000000" 
+  },
+  Mondrian: { 
+    bg: "#FFFFFF", sea: "#0055A4", seaStr: "#000000", land: "#FFFFFF", landStr: "#000000", 
+    mountain: "#E3000F", mountainStr: "#000000", road: "#FFD100", roadStr: "#000000", 
+    faction: "#0055A4", faction2: "#E3000F", religion: "#FFD100", wanted: "#E3000F", 
+    restricted: "#000000", danger: "#E3000F", fog: "#F4F4F4", fog2: "#E0E0E0", 
+    abyss: "#111111", abyss2: "#000000", abyssBorder: "#000000", overfog: "#FFFFFF", 
+    overfogStr: "#000000", heightLine: "#000000", nonePlay: "#FFFFFF", loading: "#F4F4F4", ui: "#000000" 
+  },
+  FalloutPipBoy: { 
+    bg: "#051c03", sea: "#0a2e05", seaStr: "#15d600", land: "#082504", landStr: "#15d600", 
+    mountain: "#117806", mountainStr: "#15d600", road: "#15d600", roadStr: "#0a2e05", 
+    faction: "#22ff00", faction2: "#15d600", religion: "#117806", wanted: "#15d600", 
+    restricted: "#041202", danger: "#15d600", fog: "#041202", fog2: "#082504", 
+    abyss: "#000000", abyss2: "#051c03", abyssBorder: "#15d600", overfog: "#051c03", 
+    overfogStr: "#15d600", heightLine: "#15d600", nonePlay: "#051c03", loading: "#041202", ui: "#15d600" 
+  },
+  GameBoyClassic: { 
+    bg: "#8bac0f", sea: "#306230", seaStr: "#0f380f", land: "#8bac0f", landStr: "#0f380f", 
+    mountain: "#0f380f", mountainStr: "#306230", road: "#0f380f", roadStr: "#306230", 
+    faction: "#9bbc0f", faction2: "#8bac0f", religion: "#306230", wanted: "#0f380f", 
+    restricted: "#8bac0f", danger: "#0f380f", fog: "#8bac0f", fog2: "#9bbc0f", 
+    abyss: "#0f380f", abyss2: "#306230", abyssBorder: "#0f380f", overfog: "#8bac0f", 
+    overfogStr: "#0f380f", heightLine: "#0f380f", nonePlay: "#8bac0f", loading: "#9bbc0f", ui: "#0f380f" 
+  },
+  Persona5: { 
+    bg: "#ff0000", sea: "#111111", seaStr: "#000000", land: "#ffffff", landStr: "#000000", 
+    mountain: "#880000", mountainStr: "#ffffff", road: "#ffffff", roadStr: "#000000", 
+    faction: "#ffffff", faction2: "#000000", religion: "#ff0000", wanted: "#ff0000", 
+    restricted: "#000000", danger: "#ffffff", fog: "#000000", fog2: "#111111", 
+    abyss: "#000000", abyss2: "#111111", abyssBorder: "#ff0000", overfog: "#ff0000", 
+    overfogStr: "#ffffff", heightLine: "#000000", nonePlay: "#ff0000", loading: "#ff0000", ui: "#ffffff" 
+  },
+  ZeldaBotw: { 
+    bg: "#c1cca5", sea: "#69aeb8", seaStr: "#3b312a", land: "#f5f5f0", landStr: "#3b312a", 
+    mountain: "#7c8e74", mountainStr: "#3b312a", road: "#dcd0a6", roadStr: "#3b312a", 
+    faction: "#b6cba1", faction2: "#7c8e74", religion: "#69aeb8", wanted: "#d04b49", 
+    restricted: "#3b312a", danger: "#d04b49", fog: "#e4dec8", fog2: "#f5f5f0", 
+    abyss: "#1a1a1a", abyss2: "#3b312a", abyssBorder: "#69aeb8", overfog: "#c1cca5", 
+    overfogStr: "#3b312a", heightLine: "#3b312a", nonePlay: "#c1cca5", loading: "#e2d7b5", ui: "#3b312a" 
+  },
+  Skyrim: { 
+    bg: "#d7cdba", sea: "#c1bba4", seaStr: "#2a221b", land: "#f5f5f0", landStr: "#2a221b", 
+    mountain: "#695e53", mountainStr: "#2a221b", road: "#544434", roadStr: "#2a221b", 
+    faction: "#82786a", faction2: "#695e53", religion: "#c1bba4", wanted: "#7a3124", 
+    restricted: "#2a221b", danger: "#7a3124", fog: "#dcd3bd", fog2: "#f5f5f0", 
+    abyss: "#000000", abyss2: "#2a221b", abyssBorder: "#695e53", overfog: "#d7cdba", 
+    overfogStr: "#2a221b", heightLine: "#2a221b", nonePlay: "#d7cdba", loading: "#ebdcc8", ui: "#2a221b" 
+  },
+  MirrorsEdge: { 
+    bg: "#ffffff", sea: "#0088ff", seaStr: "#000000", land: "#ffffff", landStr: "#000000", 
+    mountain: "#cccccc", mountainStr: "#000000", road: "#ff0000", roadStr: "#000000", 
+    faction: "#ffaa00", faction2: "#0088ff", religion: "#ff0000", wanted: "#ff0000", 
+    restricted: "#000000", danger: "#ff0000", fog: "#ffffff", fog2: "#f0f0f0", 
+    abyss: "#000000", abyss2: "#111111", abyssBorder: "#ff0000", overfog: "#ffffff", 
+    overfogStr: "#000000", heightLine: "#000000", nonePlay: "#ffffff", loading: "#ffffff", ui: "#000000" 
+  },
+  Doom: { 
+    bg: "#551100", sea: "#440000", seaStr: "#ff3300", land: "#220000", landStr: "#ff3300", 
+    mountain: "#110000", mountainStr: "#ff3300", road: "#ffaa00", roadStr: "#ff3300", 
+    faction: "#cc0000", faction2: "#ff0000", religion: "#440000", wanted: "#ff0000", 
+    restricted: "#110000", danger: "#ff3300", fog: "#110000", fog2: "#220000", 
+    abyss: "#000000", abyss2: "#110000", abyssBorder: "#ff3300", overfog: "#551100", 
+    overfogStr: "#ff3300", heightLine: "#ff3300", nonePlay: "#551100", loading: "#110000", ui: "#ff3300" 
+  },
+  Synthwave: { 
+    bg: "#110033", sea: "#000022", seaStr: "#ff00ff", land: "#0a0a1a", landStr: "#00ffff", 
+    mountain: "#220044", mountainStr: "#ff00ff", road: "#00ffff", roadStr: "#ff00ff", 
+    faction: "#ff00aa", faction2: "#ff00ff", religion: "#00ffff", wanted: "#ff0000", 
+    restricted: "#110022", danger: "#ff00ff", fog: "#110022", fog2: "#220044", 
+    abyss: "#000000", abyss2: "#110033", abyssBorder: "#ff00ff", overfog: "#110033", 
+    overfogStr: "#00ffff", heightLine: "#00ffff", nonePlay: "#110033", loading: "#0a0a1a", ui: "#00ffff" 
+  },
+  Vaporwave: { 
+    bg: "#ffb6c1", sea: "#00ffff", seaStr: "#ff77ff", land: "#ffd1dc", landStr: "#ff77ff", 
+    mountain: "#aa77ff", mountainStr: "#ff77ff", road: "#ffff00", roadStr: "#ff77ff", 
+    faction: "#ff00ff", faction2: "#00ffff", religion: "#ffff00", wanted: "#ff0077", 
+    restricted: "#ffd1dc", danger: "#ff77ff", fog: "#ffd1dc", fog2: "#ffb6c1", 
+    abyss: "#e0b0ff", abyss2: "#ffb6c1", abyssBorder: "#ff77ff", overfog: "#ffb6c1", 
+    overfogStr: "#ff77ff", heightLine: "#ff77ff", nonePlay: "#ffb6c1", loading: "#e0b0ff", ui: "#ff77ff" 
+  },
+  ArtDeco: { 
+    bg: "#0a1f1c", sea: "#050f0e", seaStr: "#d4af37", land: "#112e29", landStr: "#d4af37", 
+    mountain: "#0a1f1c", mountainStr: "#d4af37", road: "#d4af37", roadStr: "#0a1f1c", 
+    faction: "#c5a017", faction2: "#d4af37", religion: "#050f0e", wanted: "#800020", 
+    restricted: "#000000", danger: "#800020", fog: "#000000", fog2: "#050f0e", 
+    abyss: "#000000", abyss2: "#050f0e", abyssBorder: "#d4af37", overfog: "#0a1f1c", 
+    overfogStr: "#d4af37", heightLine: "#d4af37", nonePlay: "#0a1f1c", loading: "#050f0e", ui: "#d4af37" 
+  },
+  PopArt: { 
+    bg: "#ffff00", sea: "#00ffff", seaStr: "#000000", land: "#ff00ff", landStr: "#000000", 
+    mountain: "#0000ff", mountainStr: "#000000", road: "#ff00ff", roadStr: "#000000", 
+    faction: "#00ff00", faction2: "#ff0000", religion: "#00ffff", wanted: "#ff0000", 
+    restricted: "#ffffff", danger: "#ff0000", fog: "#ffffff", fog2: "#ffff00", 
+    abyss: "#000000", abyss2: "#111111", abyssBorder: "#000000", overfog: "#ffff00", 
+    overfogStr: "#000000", heightLine: "#000000", nonePlay: "#ffff00", loading: "#ffff00", ui: "#000000" 
+  },
+  EldenRing: { 
+    bg: "#24282a", sea: "#111a22", seaStr: "#8c7b50", land: "#1c1c1c", landStr: "#d4af37", 
+    mountain: "#2c3539", mountainStr: "#8c7b50", road: "#d4af37", roadStr: "#111a22", 
+    faction: "#7b6a4a", faction2: "#8c7b50", religion: "#111a22", wanted: "#8b0000", 
+    restricted: "#0a0c10", danger: "#8b0000", fog: "#0a0c10", fog2: "#1c1c1c", 
+    abyss: "#000000", abyss2: "#24282a", abyssBorder: "#d4af37", overfog: "#24282a", 
+    overfogStr: "#d4af37", heightLine: "#d4af37", nonePlay: "#24282a", loading: "#1c1c1c", ui: "#d4af37" 
+  },
+  Noir: { 
+    bg: "#aaaaaa", sea: "#333333", seaStr: "#000000", land: "#555555", landStr: "#000000", 
+    mountain: "#222222", mountainStr: "#ffffff", road: "#ffffff", roadStr: "#000000", 
+    faction: "#888888", faction2: "#333333", religion: "#ffffff", wanted: "#ff0000", 
+    restricted: "#000000", danger: "#ff0000", fog: "#111111", fog2: "#222222", 
+    abyss: "#000000", abyss2: "#111111", abyssBorder: "#ffffff", overfog: "#aaaaaa", 
+    overfogStr: "#000000", heightLine: "#000000", nonePlay: "#aaaaaa", loading: "#222222", ui: "#ffffff" 
+  },
+  WildWest: { 
+    bg: "#cd853f", sea: "#8b6b4a", seaStr: "#4a3018", land: "#d2b48c", landStr: "#4a3018", 
+    mountain: "#6b4423", mountainStr: "#4a3018", road: "#d2a679", roadStr: "#4a3018", 
+    faction: "#b8860b", faction2: "#8b6b4a", religion: "#d2a679", wanted: "#8b0000", 
+    restricted: "#4a3018", danger: "#8b0000", fog: "#e6ccab", fog2: "#d2b48c", 
+    abyss: "#2a1a0a", abyss2: "#4a3018", abyssBorder: "#4a3018", overfog: "#cd853f", 
+    overfogStr: "#4a3018", heightLine: "#4a3018", nonePlay: "#cd853f", loading: "#d2b48c", ui: "#4a3018" 
+  },
+  HollowKnight: { 
+    bg: "#2c3140", sea: "#202433", seaStr: "#1a1c23", land: "#12141c", landStr: "#8b9bb4", 
+    mountain: "#13151f", mountainStr: "#1a1c23", road: "#8b9bb4", roadStr: "#1a1c23", 
+    faction: "#4a5462", faction2: "#202433", religion: "#8b9bb4", wanted: "#803040", 
+    restricted: "#0b0c10", danger: "#803040", fog: "#0b0c10", fog2: "#12141c", 
+    abyss: "#000000", abyss2: "#1a1c23", abyssBorder: "#8b9bb4", overfog: "#2c3140", 
+    overfogStr: "#8b9bb4", heightLine: "#8b9bb4", nonePlay: "#2c3140", loading: "#12141c", ui: "#8b9bb4" 
+  }
 };
 
 // --- GRUPOS LÓGICOS DE CORES ---
@@ -63,27 +195,27 @@ const GROUPS = [
   {
     title: "Environment (Base)",
     icon: <Globe className="w-4 h-4" />,
-    indices: [0, 3, 4, 5, 9, 10, 11]
+    indices: [0, 3, 4, 5, 9, 10, 11, 38, 40]
   },
   {
     title: "Terrain & Relief",
     icon: <MapIcon className="w-4 h-4" />,
-    indices: [14, 15, 17, 18, 19]
+    indices: [14, 15, 17, 18, 19, 25]
   },
   {
     title: "Zones & Factions",
     icon: <Shield className="w-4 h-4" />,
-    indices: [13, 20, 21, 28, 29, 30, 31]
+    indices: [13, 20, 21, 28, 29, 30, 31, 34, 35, 36, 37, 39, 41, 42, 43]
   },
   {
     title: "Fog & Abyss",
     icon: <Wind className="w-4 h-4" />,
-    indices: [6, 7, 8, 12, 16, 22, 26, 27]
+    indices: [6, 7, 8, 12, 16, 22, 26, 27, 32, 33]
   },
   {
     title: "Interface & Loading",
     icon: <Monitor className="w-4 h-4" />,
-    indices: [1, 2, 23, 24, 25]
+    indices: [1, 2, 23, 24]
   }
 ];
 
@@ -94,7 +226,7 @@ const extractHex = (str: string) => {
 };
 
 const getLabel = (item: any, index: number) => {
-  if (!item.preset) return `Interface Color ${index + 1}`;
+  if (!item || !item.preset) return `Interface Color ${index + 1}`;
   let type = item.vanilla.includes('Outline') ? '(Outline)' : '(Fill)';
   let name = item.preset.replace('preset-worldmap-', '');
   if (name === 'preset-worldmap') name = 'base';
@@ -107,26 +239,67 @@ const generatePresets = (baseData: any[]) => {
   Object.keys(CUSTOM_PALETTES).forEach(k => presets[k] = []);
 
   baseData.forEach((item, i) => {
-    const isOutline = item.vanilla.includes('Outline');
+    const isOutline = item.vanilla.includes('Outline') || item.vanilla.includes('str');
     const vanillaHex = extractHex(item.vanilla).toLowerCase();
     const presetStr = item.preset || "ui";
     
     presets.Vanilla.push(vanillaHex);
     presets.DarkMode.push(item.mod.toLowerCase());
 
-    let type: keyof typeof CUSTOM_PALETTES.CyberPunk = "base";
-    if (isOutline) type = "outline";
-    else if (presetStr.includes('sea')) type = "sea";
-    else if (presetStr.includes('road')) type = "road";
-    else if (presetStr.includes('mountain')) type = "mountain";
-    else if (presetStr.includes('region') || presetStr.includes('faction')) type = "region";
-    else if (presetStr.includes('wanted') || presetStr.includes('restricted')) type = "wanted";
-    else if (presetStr.includes('fog') || presetStr.includes('abyss') || presetStr.includes('loading')) type = "fog";
-    else if (presetStr === "ui") type = "ui";
-
     Object.entries(CUSTOM_PALETTES).forEach(([name, palette]) => {
-      let color = (palette as any)[type] || (palette as any).base;
-      if (type === "outline" && (palette as any).outlineAlt && i % 2 !== 0) color = (palette as any).outlineAlt;
+      const p = palette as any;
+      let color = p.bg;
+
+      if (i === 0) color = p.bg;
+      else if (i === 1) color = p.ui;
+      else if (i === 2) color = p.danger;
+      else if (presetStr === "preset-worldmap-land") color = p.land;
+      else if (presetStr === "preset-worldmap") {
+        color = isOutline ? p.landStr : p.sea;
+      }
+      else if (presetStr === "preset-worldmap-overfog") {
+        if (isOutline) color = p.overfogStr;
+        else color = p.overfog;
+      }
+      else if (presetStr === "preset-worldmap-overfog-sea-outline") color = p.overfogStr;
+      else if (presetStr === "preset-worldmap-2") {
+        color = isOutline ? p.landStr : p.sea;
+      }
+      else if (presetStr === "preset-worldmap-sea") color = p.sea;
+      else if (presetStr === "preset-worldmap-fog") color = p.fog;
+      else if (presetStr === "preset-worldmap-none-play-region") color = p.nonePlay;
+      else if (presetStr.includes('road')) color = isOutline ? p.roadStr : p.road;
+      else if (presetStr.includes('mountain')) color = isOutline ? p.mountainStr : p.mountain;
+      else if (presetStr === "preset-worldmap-height-line") color = p.heightLine;
+      else if (presetStr.includes('faction')) {
+        color = presetStr.includes('2') ? p.faction2 : p.faction;
+      }
+      else if (presetStr.includes('religion')) color = p.religion;
+      else if (presetStr.includes('wanted')) color = p.wanted;
+      else if (presetStr.includes('restricted')) {
+        color = presetStr.includes('2') ? p.danger : p.restricted;
+      }
+      else if (presetStr.includes('abyss')) {
+        if (presetStr.includes('bg')) {
+            color = isOutline ? p.abyssBorder : p.abyss;
+        } else if (presetStr.includes('loading')) {
+            color = p.loading;
+        } else if (presetStr.includes('border')) {
+            color = p.abyssBorder;
+        } else if (presetStr.includes('fog')) {
+            color = presetStr.includes('2') ? p.fog2 : p.fog;
+        } else if (presetStr.includes('2')) {
+            color = p.abyss2;
+        } else {
+            color = p.abyss;
+        }
+      }
+      else if (presetStr.includes('loading')) {
+        color = presetStr.includes('2') ? p.ui : p.loading;
+      }
+      else if (presetStr === "ui") color = p.ui;
+      else if (isOutline) color = p.landStr;
+
       presets[name].push(color);
     });
   });
@@ -138,9 +311,63 @@ const presetsMap = generatePresets(RAW_DATA);
 export default function App() {
   const [colors, setColors] = useState(presetsMap.Vanilla);
   const [activePreset, setActivePreset] = useState('Vanilla');
+  const [history, setHistory] = useState<string[][]>([]);
+  const [redoStack, setRedoStack] = useState<string[][]>([]);
+  const isChangingRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const pushToHistory = (oldColors: string[]) => {
+    setHistory(prev => {
+      const newHistory = [...prev, [...oldColors]];
+      if (newHistory.length > 5) return newHistory.slice(1);
+      return newHistory;
+    });
+    setRedoStack([]);
+  };
+
+  const undo = () => {
+    if (history.length === 0) return;
+    
+    const previous = history[history.length - 1];
+    const current = [...colors];
+    
+    setRedoStack(prev => {
+      const newRedo = [...prev, current];
+      if (newRedo.length > 5) return newRedo.slice(1);
+      return newRedo;
+    });
+    
+    setHistory(prev => prev.slice(0, -1));
+    setColors([...previous]);
+    setActivePreset('Custom');
+  };
+
+  const redo = () => {
+    if (redoStack.length === 0) return;
+    
+    const next = redoStack[redoStack.length - 1];
+    const current = [...colors];
+    
+    setHistory(prev => {
+      const newHistory = [...prev, current];
+      if (newHistory.length > 5) return newHistory.slice(1);
+      return newHistory;
+    });
+    
+    setRedoStack(prev => prev.slice(0, -1));
+    setColors([...next]);
+    setActivePreset('Custom');
+  };
+
   const handleColorChange = (index: number, newColor: string) => {
+    // Only push to history once per "session" of rapid changes (like dragging a slider)
+    if (!isChangingRef.current) {
+      pushToHistory(colors);
+      isChangingRef.current = true;
+      // Reset the flag after a short delay of inactivity
+      setTimeout(() => { isChangingRef.current = false; }, 500);
+    }
+    
     const newColors = [...colors];
     newColors[index] = newColor;
     setColors(newColors);
@@ -148,6 +375,7 @@ export default function App() {
   };
 
   const applyPreset = (presetName: string) => {
+    pushToHistory(colors);
     setColors([...presetsMap[presetName]]);
     setActivePreset(presetName);
   };
@@ -171,6 +399,7 @@ export default function App() {
             if (i < finalColors.length) finalColors[i] = c;
           });
           
+          pushToHistory(colors);
           setColors(finalColors);
           setActivePreset('Custom');
         }
@@ -200,17 +429,44 @@ export default function App() {
   };
 
   const mapStyles = {
-    "--c-bg": colors[0],          
-    "--c-land": colors[3],        
-    "--c-land-str": colors[4],    
-    "--c-sea": colors[11],        
-    "--c-sea-str": colors[5],     
-    "--c-road": colors[14],       
-    "--c-mountain": colors[17],   
-    "--c-mountain-str": colors[18], 
-    "--c-faction": colors[20],    
-    "--c-religion": colors[21],   
-    "--c-danger": colors[28],     
+    "--c-bg": colors[0],
+    "--c-ui-1": colors[1],
+    "--c-ui-2": colors[2],
+    "--c-land": colors[3],
+    "--c-land-str": colors[4],
+    "--c-sea-str": colors[5],
+    "--c-overfog": colors[6],
+    "--c-overfog-land-str": colors[7],
+    "--c-overfog-sea-str": colors[8],
+    "--c-worldmap-2": colors[9],
+    "--c-worldmap-2-land-str": colors[10],
+    "--c-sea": colors[11],
+    "--c-fog": colors[12],
+    "--c-none-play": colors[13],
+    "--c-road": colors[14],
+    "--c-road-land-str": colors[15],
+    "--c-abyss-bg-hex-land-str": colors[16],
+    "--c-mountain": colors[17],
+    "--c-mountain-str": colors[18],
+    "--c-height-line": colors[19],
+    "--c-faction": colors[20],
+    "--c-religion": colors[21],
+    "--c-abyss-bg-hex": colors[22],
+    "--c-abyss-loading": colors[23],
+    "--c-loading": colors[24],
+    "--c-loading-2": colors[25],
+    "--c-abyss-fog": colors[26],
+    "--c-abyss-border-fog": colors[27],
+    "--c-danger": colors[28],
+    "--c-restricted-town": colors[29],
+    "--c-restricted-trigger": colors[30],
+    "--c-faction-region": colors[31],
+    "--c-abyss-fog-2": colors[32],
+    "--c-abyss-border-fog-2": colors[33],
+    "--c-wanted": colors[34],
+    "--c-restricted-town-2": colors[35],
+    "--c-restricted-trigger-2": colors[36],
+    "--c-faction-region-2": colors[37],
   } as React.CSSProperties;
 
   return (
@@ -229,6 +485,24 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 mr-2">
+            <button
+              onClick={undo}
+              disabled={history.length === 0}
+              className="p-2.5 bg-[#21262d] hover:bg-[#30363d] text-gray-200 rounded-md border border-[#30363d] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              title="Undo (Max 5)"
+            >
+              <Undo className="w-4 h-4" />
+            </button>
+            <button
+              onClick={redo}
+              disabled={redoStack.length === 0}
+              className="p-2.5 bg-[#21262d] hover:bg-[#30363d] text-gray-200 rounded-md border border-[#30363d] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              title="Redo (Max 5)"
+            >
+              <Redo className="w-4 h-4" />
+            </button>
+          </div>
           <div className="relative">
             <select
               value={activePreset}
@@ -312,6 +586,7 @@ export default function App() {
                 <div className="p-2 flex flex-col gap-1">
                   {group.indices.map(idx => {
                     const item = RAW_DATA[idx];
+                    const color = colors[idx] || "#000000";
                     return (
                       <div key={idx} className="flex items-center justify-between px-3 py-2 hover:bg-[#21262d] rounded-lg transition-colors group">
                         
@@ -324,15 +599,15 @@ export default function App() {
                         
                         <div className="flex items-center gap-3 shrink-0">
                           <span className="text-[11px] text-gray-400 font-mono uppercase w-16 text-right">
-                            {colors[idx]}
+                            {color}
                           </span>
                           
                           {/* Botão de Cor (Estilizado) */}
                           <div className="relative w-8 h-8 rounded-md shadow-inner border border-[#30363d] cursor-pointer overflow-hidden group-hover:ring-2 ring-indigo-500 ring-offset-2 ring-offset-[#161b22] transition-all">
-                            <div className="absolute inset-0" style={{ backgroundColor: colors[idx] }}></div>
+                            <div className="absolute inset-0" style={{ backgroundColor: color }}></div>
                             <input
                               type="color"
-                              value={colors[idx]}
+                              value={color}
                               onChange={(e) => handleColorChange(idx, e.target.value)}
                               className="absolute -top-4 -left-4 w-16 h-16 opacity-0 cursor-pointer"
                               title="Change Color"
@@ -365,8 +640,8 @@ export default function App() {
             
             <svg 
               viewBox="0 0 1920 1080" 
-              className="absolute inset-0 w-full h-full drop-shadow-2xl"
-              preserveAspectRatio="xMidYMid slice"
+              className="absolute inset-0 w-full h-full"
+              preserveAspectRatio="xMidYMid meet"
             >
               <defs>
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -379,193 +654,111 @@ export default function App() {
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
                 </filter>
-                {/* Paper texture pattern */}
-                <pattern id="paper-texture" width="400" height="400" patternUnits="userSpaceOnUse">
-                  <rect width="400" height="400" fill="var(--c-bg)" />
-                  <circle cx="100" cy="100" r="1" fill="black" opacity="0.03" />
-                  <circle cx="300" cy="250" r="1.5" fill="black" opacity="0.02" />
-                  <path d="M 0 0 L 400 400 M 400 0 L 0 400" stroke="black" strokeWidth="0.5" opacity="0.01" />
-                </pattern>
-                {/* Hatching for mountains */}
-                <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                  <line x1="0" y1="0" x2="0" y2="8" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.3" />
-                </pattern>
               </defs>
 
-              {/* Background Terrain */}
-              <rect width="100%" height="100%" fill="url(#paper-texture)" className="transition-colors duration-700" />
+              {/* 1. BACKGROUND BASE */}
+              <rect width="100%" height="100%" fill="var(--c-bg)" className="transition-colors duration-700" />
               
-              {/* === WATER (SEA & COASTLINE) === */}
+              {/* 2. SEA AREA (Fill & Outline) */}
               <g className="transition-colors duration-700">
-                {/* Deep Sea */}
                 <path 
-                  d="M 0,0 L 420,0 C 380,150 480,300 350,450 C 250,600 400,750 280,900 C 180,1000 300,1080 0,1080 Z" 
-                  fill="var(--c-sea)" opacity="0.3"
-                />
-                {/* Coastline Depth & Wave Lines */}
-                <path 
-                  d="M 15,0 C 390,160 490,310 360,460 C 260,610 410,760 290,910 C 190,1010 310,1080 15,1080" 
-                  fill="none" stroke="var(--c-sea-str)" strokeWidth="2" opacity="0.2"
+                  d="M 0,0 L 1920,0 L 1920,1080 L 0,1080 Z M 400,200 C 600,100 1300,100 1500,300 C 1700,500 1600,800 1300,900 C 1000,1000 500,900 400,700 C 300,500 200,300 400,200 Z" 
+                  fill="var(--c-sea)" fillRule="evenodd" opacity="0.8"
                 />
                 <path 
-                  d="M 25,0 C 400,170 500,320 370,470 C 270,620 420,770 300,920 C 200,1020 320,1080 25,1080" 
-                  fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.1" strokeDasharray="20,10"
+                  d="M 400,200 C 600,100 1300,100 1500,300 C 1700,500 1600,800 1300,900 C 1000,1000 500,900 400,700 C 300,500 200,300 400,200 Z" 
+                  fill="none" stroke="var(--c-sea-str)" strokeWidth="8"
                 />
-                {/* Main Jagged Coastline */}
+                {/* Secondary Sea Area (Worldmap 2) */}
                 <path 
-                  d="M 0,0 L 400,0 C 360,150 460,300 330,450 C 230,600 380,750 260,900 C 160,1000 280,1080 0,1080 Z" 
-                  fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="4"
+                  d="M 1600,700 C 1750,750 1850,900 1800,1000 L 1500,1000 C 1550,900 1550,750 1600,700 Z" 
+                  fill="var(--c-worldmap-2)" stroke="var(--c-worldmap-2-land-str)" strokeWidth="4"
                 />
-                
-                {/* Coastal Islands & Ripples */}
-                <path d="M 450,200 C 470,180 500,210 480,230 C 460,250 430,220 450,200 Z" fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="2" />
-                <path d="M 440,190 C 470,160 520,210 490,240" fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.2" />
-                
-                <path d="M 380,700 C 400,680 430,710 410,730 C 390,750 360,720 380,700 Z" fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="2" />
-                <path d="M 370,690 C 400,660 450,710 420,740" fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.2" />
-                
-                {/* Inland Lake & Complex River System */}
-                <path 
-                  d="M 1450,750 C 1500,700 1650,700 1700,780 C 1750,860 1650,980 1500,950 C 1400,920 1350,820 1450,750 Z" 
-                  fill="var(--c-sea)" stroke="var(--c-sea-str)" strokeWidth="3"
-                />
-                <path d="M 1470,770 C 1520,740 1620,740 1660,800" fill="none" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.3" />
-                
-                <path 
-                  d="M 1450,750 C 1350,730 1250,800 1150,770 C 1050,740 950,830 850,800 C 750,770 650,850 550,820" 
-                  fill="none" stroke="var(--c-sea)" strokeWidth="10" strokeLinecap="round" opacity="0.5"
-                />
-                {/* River Ripples */}
-                <path d="M 1100,760 L 1130,765 M 1000,780 L 1030,785 M 900,800 L 930,805" stroke="var(--c-sea-str)" strokeWidth="1" opacity="0.3" />
               </g>
 
-              {/* === TERRAIN CONTOUR LINES (TOPOGRAPHY) === */}
-              <g fill="none" stroke="var(--c-land-str)" strokeWidth="1" opacity="0.05" className="transition-colors duration-700">
-                <path d="M 500,300 C 700,250 1000,250 1200,400 C 1400,550 1300,800 1100,900 C 900,1000 600,950 500,800" />
-                <path d="M 550,350 C 750,300 1050,300 1250,450 C 1450,600 1350,850 1150,950 C 950,1050 650,1000 550,850" />
-              </g>
-
-              {/* === MOUNTAINS (HIGHLY DETAILED RIDGES & CRAGS) === */}
+              {/* 3. MAIN LAND MASS (Fill & Outline) */}
               <g className="transition-colors duration-700">
-                {/* North Range Peaks */}
-                <g transform="translate(650, 80)">
-                  {/* Peak 1 with Ridges */}
-                  <path d="M 0,120 L 60,20 L 120,120 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
-                  <path d="M 60,20 L 50,60 L 65,80 L 45,120" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
-                  <path d="M 60,20 L 70,50 L 55,70 L 65,90" fill="none" stroke="var(--c-mountain-str)" strokeWidth="0.5" opacity="0.3" />
-                  <path d="M 60,20 L 80,60 L 60,80 L 40,60 Z" fill="white" opacity="0.3" />
-                  <path d="M 60,20 L 120,120 L 60,120 Z" fill="black" opacity="0.15" />
-                  
-                  {/* Peak 2 with Ridges */}
-                  <path d="M 100,140 L 180,40 L 260,140 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
-                  <path d="M 180,40 L 170,80 L 190,100 L 175,140" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
-                  <path d="M 180,40 L 260,140 L 180,140 Z" fill="black" opacity="0.15" />
-                  
-                  {/* Peak 3 with Ridges */}
-                  <path d="M 240,120 L 320,20 L 400,120 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
-                  <path d="M 320,20 L 310,60 L 330,80 L 315,120" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
-                  <path d="M 320,20 L 400,120 L 320,120 Z" fill="black" opacity="0.15" />
-                </g>
-
-                {/* East Range Peaks */}
-                <g transform="translate(1550, 250)">
-                  <path d="M 0,180 L 80,30 L 160,180 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="2" />
-                  <path d="M 80,30 L 70,80 L 90,120 L 75,180" fill="none" stroke="var(--c-mountain-str)" strokeWidth="1" opacity="0.4" />
-                  <path d="M 80,30 L 160,180 L 80,180 Z" fill="black" opacity="0.15" />
-                </g>
+                <path 
+                  d="M 400,200 C 600,100 1300,100 1500,300 C 1700,500 1600,800 1300,900 C 1000,1000 500,900 400,700 C 300,500 200,300 400,200 Z" 
+                  fill="var(--c-land)"
+                />
+                <path 
+                  d="M 400,200 C 600,100 1300,100 1500,300 C 1700,500 1600,800 1300,900 C 1000,1000 500,900 400,700 C 300,500 200,300 400,200 Z" 
+                  fill="none" stroke="var(--c-land-str)" strokeWidth="4"
+                />
+                {/* Topography Detail */}
+                <path d="M 600,400 Q 950,300 1300,400" fill="none" stroke="var(--c-height-line)" strokeWidth="2" opacity="0.3" />
               </g>
 
-              {/* === TERRAIN & BIOMES (ORGANIC TEXTURES) === */}
+              {/* 4. MOUNTAIN RANGE (Fill & Outline) */}
+              <g transform="translate(850, 350)" className="transition-colors duration-700">
+                <path d="M 0,150 L 100,0 L 200,150 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="4" />
+                <path d="M 150,150 L 250,50 L 350,150 Z" fill="var(--c-mountain)" stroke="var(--c-mountain-str)" strokeWidth="4" />
+                <path d="M 100,0 L 120,60 L 80,100" fill="none" stroke="var(--c-mountain-str)" strokeWidth="2" opacity="0.5" />
+              </g>
+
+              {/* 5. ROADS & TRAILS (Fill & Outline) */}
               <g className="transition-colors duration-700">
-                {/* Swamp Area with Reeds */}
-                <g transform="translate(1200, 200)" opacity="0.2">
-                  <path d="M 0,0 C 50,-20 100,20 150,0 C 200,-20 250,20 300,0" fill="none" stroke="var(--c-land-str)" strokeWidth="2" />
-                  <path d="M 10,20 C 60,0 110,40 160,20 C 210,0 260,40 310,20" fill="none" stroke="var(--c-land-str)" strokeWidth="2" />
-                  {/* Reeds */}
-                  <line x1="50" y1="-10" x2="55" y2="-25" stroke="var(--c-land-str)" strokeWidth="1" />
-                  <line x1="150" y1="10" x2="155" y2="-5" stroke="var(--c-land-str)" strokeWidth="1" />
-                  <line x1="250" y1="-10" x2="255" y2="-25" stroke="var(--c-land-str)" strokeWidth="1" />
-                </g>
-                
-                {/* Organic Forest Blobs */}
-                <g fill="var(--c-land-str)" opacity="0.25">
-                  {/* West Forest Blob */}
-                  <path d="M 620,450 C 600,430 580,460 590,490 C 600,520 640,530 670,510 C 700,490 680,440 650,430 C 630,420 620,450 620,450 Z" />
-                  {/* Internal detail */}
-                  <path d="M 620,460 L 630,470 M 650,480 L 660,490" stroke="var(--c-bg)" strokeWidth="1" opacity="0.5" />
-                  
-                  {/* East Forest Blob */}
-                  <path d="M 1120,600 C 1100,580 1080,610 1090,640 C 1100,670 1140,680 1170,660 C 1200,640 1180,590 1150,580 C 1130,570 1120,600 1120,600 Z" />
-                </g>
-
-                {/* Grass Clusters */}
-                <g stroke="var(--c-land-str)" strokeWidth="1" opacity="0.15" fill="none">
-                  <path d="M 800,300 L 805,290 M 805,290 L 810,300" />
-                  <path d="M 820,310 L 825,300 M 825,300 L 830,310" />
-                  <path d="M 1000,700 L 1005,690 M 1005,690 L 1010,700" />
-                </g>
-
-                {/* Settlement Clusters (Towns) */}
-                <g fill="var(--c-danger)" opacity="0.6" stroke="var(--c-bg)" strokeWidth="1">
-                  {/* Town 1 */}
-                  <rect x="980" y="430" width="12" height="12" rx="1" />
-                  <rect x="995" y="435" width="8" height="8" rx="1" />
-                  <rect x="985" y="445" width="10" height="10" rx="1" />
-                  <path d="M 980,430 L 986,424 L 992,430 Z" /> {/* Roof */}
-                  
-                  {/* Castle / Keep */}
-                  <g transform="translate(1480, 720)">
-                    <rect x="0" y="0" width="20" height="20" rx="1" />
-                    <rect x="-5" y="-10" width="10" height="30" rx="1" />
-                    <rect x="15" y="-10" width="10" height="30" rx="1" />
-                    <path d="M -5,-10 L 0,-15 L 5,-10 Z" />
-                    <path d="M 15,-10 L 20,-15 L 25,-10 Z" />
-                  </g>
-                </g>
-              </g>
-
-              {/* === ROADS & TRAILS === */}
-              <g stroke="var(--c-road)" fill="none" strokeLinecap="round" strokeLinejoin="round" className="transition-colors duration-700">
-                {/* Main Arteries */}
                 <path 
-                  d="M 400,350 C 600,400 800,370 1000,500 C 1200,630 1400,600 1600,700" 
-                  strokeWidth="10" opacity="0.8"
+                  d="M 500,400 C 700,500 1100,500 1300,700" 
+                  fill="none" stroke="var(--c-road)" strokeWidth="12" strokeLinecap="round"
                 />
                 <path 
-                  d="M 850,150 C 870,300 830,450 900,600 C 970,750 900,900 950,1050" 
-                  strokeWidth="6" opacity="0.7"
+                  d="M 500,400 C 700,500 1100,500 1300,700" 
+                  fill="none" stroke="var(--c-road-land-str)" strokeWidth="2" strokeDasharray="10,10"
                 />
+              </g>
+
+              {/* 6. REGIONS & ZONES (Fill & Outline) */}
+              <g className="transition-colors duration-700">
+                {/* Faction Region */}
+                <path d="M 1100,200 L 1400,200 L 1450,400 L 1150,450 Z" fill="var(--c-faction-region)" stroke="var(--c-faction)" strokeWidth="4" opacity="0.7" />
+                <path d="M 1150,250 L 1350,250 L 1380,380 L 1180,400 Z" fill="var(--c-faction-region-2)" opacity="0.4" />
                 
-                {/* Mountain Trails (Dashed) */}
-                <path d="M 750,150 L 700,100" strokeWidth="2" strokeDasharray="4,4" opacity="0.5" />
-                <path d="M 1650,400 L 1700,350" strokeWidth="2" strokeDasharray="4,4" opacity="0.5" />
+                {/* Religion Region */}
+                <circle cx="600" cy="600" r="80" fill="var(--c-religion)" stroke="var(--c-ui-1)" strokeWidth="2" opacity="0.6" />
+                
+                {/* Wanted Region */}
+                <path d="M 450,750 Q 600,650 750,750" fill="none" stroke="var(--c-wanted)" strokeWidth="30" strokeLinecap="round" opacity="0.8" />
+                
+                {/* Restricted Areas */}
+                <g transform="translate(1300, 750)">
+                  <rect width="120" height="120" fill="var(--c-restricted-town)" stroke="var(--c-restricted-town-2)" strokeWidth="4" />
+                  <circle cx="60" cy="60" r="30" fill="var(--c-restricted-trigger)" stroke="var(--c-restricted-trigger-2)" strokeWidth="2" />
+                </g>
+
+                {/* Danger Zone */}
+                <rect x="900" y="750" width="40" height="40" fill="var(--c-danger)" stroke="var(--c-bg)" strokeWidth="2" rx="4" />
               </g>
 
-              {/* === DECORATIVE ELEMENTS === */}
-              <g transform="translate(1750, 150)" opacity="0.4" stroke="var(--c-land-str)" fill="none">
-                <circle r="60" strokeWidth="2" />
-                <circle r="50" strokeWidth="1" strokeDasharray="2,2" />
-                <path d="M 0,-70 L 10,-50 L 0,-55 L -10,-50 Z" fill="var(--c-land-str)" /> {/* North */}
-                <path d="M 0,70 L 10,50 L 0,55 L -10,50 Z" /> {/* South */}
-                <path d="M 70,0 L 50,10 L 55,0 L 50,-10 Z" /> {/* East */}
-                <path d="M -70,0 L -50,10 L -55,0 L -50,-10 Z" /> {/* West */}
-                <text x="0" y="-80" textAnchor="middle" fontSize="20" fill="var(--c-land-str)" stroke="none">N</text>
+              {/* 7. FOG & ABYSS (Peripheral Layers) */}
+              <g className="transition-colors duration-700">
+                {/* General Fog */}
+                <rect width="1920" height="1080" fill="var(--c-fog)" opacity="0.15" pointerEvents="none" />
+                
+                {/* Overfog (Top Corner) */}
+                <path d="M 1500,0 L 1920,0 L 1920,300 Z" fill="var(--c-overfog)" />
+                <path d="M 1500,0 L 1920,300" fill="none" stroke="var(--c-overfog-land-str)" strokeWidth="4" />
+                <path d="M 1920,0 L 1500,0" fill="none" stroke="var(--c-overfog-sea-str)" strokeWidth="2" />
+
+                {/* Abyss (Bottom Left) */}
+                <g transform="translate(150, 750)">
+                  <path d="M 0,50 L 100,0 L 200,50 L 200,150 L 100,200 L 0,150 Z" fill="var(--c-abyss-bg-hex)" stroke="var(--c-abyss-bg-hex-land-str)" strokeWidth="4" />
+                  <circle cx="100" cy="100" r="60" fill="var(--c-abyss-fog)" stroke="var(--c-abyss-border-fog)" strokeWidth="2" />
+                  <circle cx="100" cy="100" r="40" fill="var(--c-abyss-fog-2)" stroke="var(--c-abyss-border-fog-2)" strokeWidth="1" />
+                </g>
+
+                {/* None Play Region (Borders) */}
+                <rect width="1920" height="40" fill="var(--c-none-play)" opacity="0.6" />
+                <rect y="1040" width="1920" height="40" fill="var(--c-none-play)" opacity="0.6" />
               </g>
 
-              {/* === TEXT (CURVED & STYLIZED) === */}
-              <g fill="var(--c-land-str)" fontFamily="'Georgia', serif" letterSpacing="10" fontWeight="bold" opacity="0.6" className="transition-colors duration-700">
-                <defs>
-                  <path id="textPath" d="M 850,150 Q 1010,100 1170,150" />
-                </defs>
-                <text fontSize="36" textAnchor="middle">
-                  <textPath href="#textPath" startOffset="50%">HERNAND HIGHLANDS</textPath>
-                </text>
-              </g>
-
-              {/* === PLAYER CURSOR (STYLIZED) === */}
-              <g transform="translate(950, 650) rotate(-15)" filter="url(#glow)">
-                <path d="M 0,-24 L -16,16 L 0,8 L 16,16 Z" fill="#3b82f6" stroke="#1e3a8a" strokeWidth="2" />
-                <circle cx="0" cy="0" r="4" fill="white" opacity="0.5" />
+              {/* 8. INTERFACE & LOADING (Corner Widgets) */}
+              <g transform="translate(1550, 850)" className="transition-colors duration-700">
+                <rect width="280" height="180" fill="var(--c-loading)" rx="12" stroke="var(--c-ui-1)" strokeWidth="4" />
+                <rect x="30" y="140" width="220" height="12" fill="var(--c-loading-2)" rx="6" />
+                <rect x="30" y="30" width="50" height="50" fill="var(--c-abyss-loading)" rx="8" />
+                <text x="140" y="100" textAnchor="middle" fill="var(--c-ui-2)" fontSize="24" fontWeight="bold" fontFamily="sans-serif">PREVIEW</text>
               </g>
 
             </svg>

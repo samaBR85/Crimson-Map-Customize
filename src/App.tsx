@@ -485,6 +485,28 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-4">
+          <div className="hidden lg:flex items-center text-xs text-gray-400 mr-4 whitespace-nowrap italic">
+            <span>
+              to use with{" "}
+              <a 
+                href="https://www.nexusmods.com/crimsondesert/mods/411" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
+              >
+                Dark Mode Map
+              </a>{" "}
+              made by{" "}
+              <a 
+                href="https://www.nexusmods.com/profile/TheLastGunslinger9" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
+              >
+                TheLastGunslinger9
+              </a>
+            </span>
+          </div>
           <div className="flex items-center gap-2 mr-2">
             <button
               onClick={undo}

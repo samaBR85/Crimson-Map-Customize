@@ -39,7 +39,7 @@ const RAW_DATA = [
 
 const CUSTOM_PALETTES = {
   CyberPunk: { 
-    bg: "#020202", sea: "#0a1a2f", seaStr: "#00f0ff", land: "#1a1a2e", landStr: "#ff003c", 
+    bg: "#020202", sea: "#0a1a2f", seaStr: "#00f0ff", land: "#1a1a2e", land2: "#2a0a4a", landStr: "#ff003c", 
     mountain: "#3d007d", mountainStr: "#7000ff", road: "#fcee0a", roadStr: "#ff003c", 
     faction: "#39ff14", faction2: "#00ff9f", religion: "#bc13fe", wanted: "#ff003c", 
     restricted: "#1a002a", danger: "#ff0000", fog: "#1a002a", fog2: "#2a004a", 
@@ -47,7 +47,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#00f0ff", heightLine: "#30363d", nonePlay: "#000000", loading: "#0b0c10", ui: "#00f0ff" 
   },
   RomeroBritto: { 
-    bg: "#FFCC00", sea: "#00A8FF", seaStr: "#000000", land: "#FF5733", landStr: "#000000", 
+    bg: "#FFCC00", sea: "#00A8FF", seaStr: "#000000", land: "#FF5733", land2: "#FF3399", landStr: "#000000", 
     mountain: "#9D00FF", mountainStr: "#000000", road: "#FF007F", roadStr: "#000000", 
     faction: "#85E21F", faction2: "#FFCC00", religion: "#C70039", wanted: "#FF0000", 
     restricted: "#581845", danger: "#FFC300", fog: "#FFFFFF", fog2: "#F0F0F0", 
@@ -55,7 +55,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#000000", heightLine: "#000000", nonePlay: "#FFCC00", loading: "#FFCC00", ui: "#000000" 
   },
   Mondrian: { 
-    bg: "#f5f5f5", sea: "#0055A4", seaStr: "#000000", land: "#FFFFFF", landStr: "#000000", 
+    bg: "#f5f5f5", sea: "#0055A4", seaStr: "#000000", land: "#FFFFFF", land2: "#E8E8E8", landStr: "#000000", 
     mountain: "#E3000F", mountainStr: "#000000", road: "#FFD100", roadStr: "#000000", 
     faction: "#0055A4", faction2: "#E3000F", religion: "#FFD100", wanted: "#E3000F", 
     restricted: "#000000", danger: "#E3000F", fog: "#F4F4F4", fog2: "#E0E0E0", 
@@ -63,7 +63,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#000000", heightLine: "#000000", nonePlay: "#FFFFFF", loading: "#F4F4F4", ui: "#000000" 
   },
   FalloutPipBoy: { 
-    bg: "#020d01", sea: "#0a2e05", seaStr: "#15d600", land: "#1a4d1a", landStr: "#15d600", 
+    bg: "#020d01", sea: "#0a2e05", seaStr: "#15d600", land: "#1a4d1a", land2: "#113b11", landStr: "#15d600", 
     mountain: "#228b22", mountainStr: "#15d600", road: "#15d600", roadStr: "#0a2e05", 
     faction: "#22ff00", faction2: "#15d600", religion: "#117806", wanted: "#15d600", 
     restricted: "#041202", danger: "#15d600", fog: "#041202", fog2: "#082504", 
@@ -71,7 +71,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#15d600", heightLine: "#15d600", nonePlay: "#051c03", loading: "#041202", ui: "#15d600" 
   },
   GameBoyClassic: { 
-    bg: "#9bbc0f", sea: "#306230", seaStr: "#0f380f", land: "#8bac0f", landStr: "#0f380f", 
+    bg: "#9bbc0f", sea: "#306230", seaStr: "#0f380f", land: "#8bac0f", land2: "#9bbc0f", landStr: "#0f380f", 
     mountain: "#0f380f", mountainStr: "#306230", road: "#306230", roadStr: "#0f380f", 
     faction: "#9bbc0f", faction2: "#8bac0f", religion: "#306230", wanted: "#0f380f", 
     restricted: "#8bac0f", danger: "#0f380f", fog: "#8bac0f", fog2: "#9bbc0f", 
@@ -79,7 +79,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#0f380f", heightLine: "#0f380f", nonePlay: "#8bac0f", loading: "#9bbc0f", ui: "#0f380f" 
   },
   Persona5: { 
-    bg: "#ff0000", sea: "#111111", seaStr: "#000000", land: "#ffffff", landStr: "#000000", 
+    bg: "#ff0000", sea: "#111111", seaStr: "#000000", land: "#ffffff", land2: "#dddddd", landStr: "#000000", 
     mountain: "#880000", mountainStr: "#ffffff", road: "#000000", roadStr: "#ffffff", 
     faction: "#ffffff", faction2: "#000000", religion: "#ff0000", wanted: "#ff0000", 
     restricted: "#000000", danger: "#ffffff", fog: "#000000", fog2: "#111111", 
@@ -87,7 +87,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#ffffff", heightLine: "#000000", nonePlay: "#ff0000", loading: "#ff0000", ui: "#ffffff" 
   },
   ZeldaBotw: { 
-    bg: "#c1cca5", sea: "#69aeb8", seaStr: "#3b312a", land: "#f5f5f0", landStr: "#3b312a", 
+    bg: "#c1cca5", sea: "#69aeb8", seaStr: "#3b312a", land: "#f5f5f0", land2: "#e2d7b5", landStr: "#3b312a", 
     mountain: "#7c8e74", mountainStr: "#3b312a", road: "#dcd0a6", roadStr: "#3b312a", 
     faction: "#b6cba1", faction2: "#7c8e74", religion: "#69aeb8", wanted: "#d04b49", 
     restricted: "#3b312a", danger: "#d04b49", fog: "#e4dec8", fog2: "#f5f5f0", 
@@ -95,7 +95,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#3b312a", heightLine: "#3b312a", nonePlay: "#c1cca5", loading: "#e2d7b5", ui: "#3b312a" 
   },
   Skyrim: { 
-    bg: "#d7cdba", sea: "#a8a08c", seaStr: "#2a221b", land: "#f5f5f0", landStr: "#2a221b", 
+    bg: "#d7cdba", sea: "#a8a08c", seaStr: "#2a221b", land: "#f5f5f0", land2: "#dcd3bd", landStr: "#2a221b", 
     mountain: "#695e53", mountainStr: "#2a221b", road: "#544434", roadStr: "#2a221b", 
     faction: "#82786a", faction2: "#695e53", religion: "#c1bba4", wanted: "#7a3124", 
     restricted: "#2a221b", danger: "#7a3124", fog: "#dcd3bd", fog2: "#f5f5f0", 
@@ -103,7 +103,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#2a221b", heightLine: "#2a221b", nonePlay: "#d7cdba", loading: "#ebdcc8", ui: "#2a221b" 
   },
   MirrorsEdge: { 
-    bg: "#f0f0f0", sea: "#0088ff", seaStr: "#000000", land: "#ffffff", landStr: "#000000", 
+    bg: "#f0f0f0", sea: "#0088ff", seaStr: "#000000", land: "#ffffff", land2: "#e6e6e6", landStr: "#000000", 
     mountain: "#cccccc", mountainStr: "#000000", road: "#ff0000", roadStr: "#000000", 
     faction: "#ffaa00", faction2: "#0088ff", religion: "#ff0000", wanted: "#ff0000", 
     restricted: "#000000", danger: "#ff0000", fog: "#ffffff", fog2: "#f0f0f0", 
@@ -111,7 +111,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#000000", heightLine: "#000000", nonePlay: "#ffffff", loading: "#ffffff", ui: "#000000" 
   },
   Doom: { 
-    bg: "#551100", sea: "#330000", seaStr: "#ff3300", land: "#220000", landStr: "#ff3300", 
+    bg: "#551100", sea: "#330000", seaStr: "#ff3300", land: "#220000", land2: "#440000", landStr: "#ff3300", 
     mountain: "#110000", mountainStr: "#ff3300", road: "#ffaa00", roadStr: "#ff3300", 
     faction: "#cc0000", faction2: "#ff0000", religion: "#440000", wanted: "#ff0000", 
     restricted: "#110000", danger: "#ff3300", fog: "#110000", fog2: "#220000", 
@@ -119,7 +119,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#ff3300", heightLine: "#ff3300", nonePlay: "#551100", loading: "#110000", ui: "#ff3300" 
   },
   Synthwave: { 
-    bg: "#0a051a", sea: "#1a0a3a", seaStr: "#ff00ff", land: "#050510", landStr: "#00ffff", 
+    bg: "#0a051a", sea: "#1a0a3a", seaStr: "#ff00ff", land: "#050510", land2: "#2a054a", landStr: "#00ffff", 
     mountain: "#440066", mountainStr: "#ff00ff", road: "#00ffff", roadStr: "#ff00ff", 
     faction: "#ff00aa", faction2: "#ff00ff", religion: "#00ffff", wanted: "#ff0000", 
     restricted: "#110022", danger: "#ff00ff", fog: "#110022", fog2: "#220044", 
@@ -127,7 +127,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#00ffff", heightLine: "#00ffff", nonePlay: "#110033", loading: "#0a0a1a", ui: "#00ffff" 
   },
   Vaporwave: { 
-    bg: "#ffb6c1", sea: "#00ffff", seaStr: "#ff77ff", land: "#f8f8ff", landStr: "#ff77ff", 
+    bg: "#ffb6c1", sea: "#00ffff", seaStr: "#ff77ff", land: "#f8f8ff", land2: "#ffd1dc", landStr: "#ff77ff", 
     mountain: "#aa77ff", mountainStr: "#ff77ff", road: "#ffff00", roadStr: "#ff77ff", 
     faction: "#ff00ff", faction2: "#00ffff", religion: "#ffff00", wanted: "#ff0077", 
     restricted: "#ffd1dc", danger: "#ff77ff", fog: "#ffd1dc", fog2: "#ffb6c1", 
@@ -135,7 +135,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#ff77ff", heightLine: "#ff77ff", nonePlay: "#ffb6c1", loading: "#e0b0ff", ui: "#ff77ff" 
   },
   ArtDeco: { 
-    bg: "#0a1f1c", sea: "#020807", seaStr: "#d4af37", land: "#112e29", landStr: "#d4af37", 
+    bg: "#0a1f1c", sea: "#020807", seaStr: "#d4af37", land: "#112e29", land2: "#1a3c34", landStr: "#d4af37", 
     mountain: "#2a4d47", mountainStr: "#d4af37", road: "#d4af37", roadStr: "#0a1f1c", 
     faction: "#c5a017", faction2: "#d4af37", religion: "#050f0e", wanted: "#800020", 
     restricted: "#000000", danger: "#800020", fog: "#000000", fog2: "#050f0e", 
@@ -143,7 +143,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#d4af37", heightLine: "#d4af37", nonePlay: "#0a1f1c", loading: "#050f0e", ui: "#d4af37" 
   },
   PopArt: { 
-    bg: "#ffff00", sea: "#00ffff", seaStr: "#000000", land: "#ff00ff", landStr: "#000000", 
+    bg: "#ffff00", sea: "#00ffff", seaStr: "#000000", land: "#ff00ff", land2: "#ffaa00", landStr: "#000000", 
     mountain: "#0000ff", mountainStr: "#000000", road: "#00ff00", roadStr: "#000000", 
     faction: "#00ff00", faction2: "#ff0000", religion: "#00ffff", wanted: "#ff0000", 
     restricted: "#ffffff", danger: "#ff0000", fog: "#ffffff", fog2: "#ffff00", 
@@ -151,7 +151,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#000000", heightLine: "#000000", nonePlay: "#ffff00", loading: "#ffff00", ui: "#000000" 
   },
   EldenRing: { 
-    bg: "#24282a", sea: "#0a141a", seaStr: "#8c7b50", land: "#1c1c1c", landStr: "#d4af37", 
+    bg: "#24282a", sea: "#0a141a", seaStr: "#8c7b50", land: "#1c1c1c", land2: "#2a2a2a", landStr: "#d4af37", 
     mountain: "#4a4a4a", mountainStr: "#8c7b50", road: "#d4af37", roadStr: "#111a22", 
     faction: "#7b6a4a", faction2: "#8c7b50", religion: "#111a22", wanted: "#8b0000", 
     restricted: "#0a0c10", danger: "#8b0000", fog: "#0a0c10", fog2: "#1c1c1c", 
@@ -159,7 +159,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#d4af37", heightLine: "#d4af37", nonePlay: "#24282a", loading: "#1c1c1c", ui: "#d4af37" 
   },
   Noir: { 
-    bg: "#aaaaaa", sea: "#000000", seaStr: "#000000", land: "#555555", landStr: "#000000", 
+    bg: "#aaaaaa", sea: "#000000", seaStr: "#000000", land: "#555555", land2: "#777777", landStr: "#000000", 
     mountain: "#333333", mountainStr: "#ffffff", road: "#ffffff", roadStr: "#000000", 
     faction: "#888888", faction2: "#333333", religion: "#ffffff", wanted: "#ff0000", 
     restricted: "#000000", danger: "#ff0000", fog: "#111111", fog2: "#222222", 
@@ -167,7 +167,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#000000", heightLine: "#000000", nonePlay: "#aaaaaa", loading: "#222222", ui: "#ffffff" 
   },
   WildWest: { 
-    bg: "#cd853f", sea: "#4a6b8a", seaStr: "#4a3018", land: "#d2b48c", landStr: "#4a3018", 
+    bg: "#cd853f", sea: "#4a6b8a", seaStr: "#4a3018", land: "#d2b48c", land2: "#e6ccab", landStr: "#4a3018", 
     mountain: "#6b4423", mountainStr: "#4a3018", road: "#f4a460", roadStr: "#4a3018", 
     faction: "#b8860b", faction2: "#8b6b4a", religion: "#d2a679", wanted: "#8b0000", 
     restricted: "#4a3018", danger: "#8b0000", fog: "#e6ccab", fog2: "#d2b48c", 
@@ -175,7 +175,7 @@ const CUSTOM_PALETTES = {
     overfogStr: "#4a3018", heightLine: "#4a3018", nonePlay: "#cd853f", loading: "#d2b48c", ui: "#4a3018" 
   },
   HollowKnight: { 
-    bg: "#2c3140", sea: "#1a1c23", seaStr: "#1a1c23", land: "#0a0c10", landStr: "#8b9bb4", 
+    bg: "#2c3140", sea: "#1a1c23", seaStr: "#1a1c23", land: "#0a0c10", land2: "#12141c", landStr: "#8b9bb4", 
     mountain: "#3d3d3d", mountainStr: "#1a1c23", road: "#8b9bb4", roadStr: "#1a1c23", 
     faction: "#4a5462", faction2: "#202433", religion: "#8b9bb4", wanted: "#803040", 
     restricted: "#0b0c10", danger: "#803040", fog: "#0b0c10", fog2: "#12141c", 
@@ -220,6 +220,10 @@ const extractHex = (str: string) => {
 };
 
 const getLabel = (item: any, index: number) => {
+  if (index === 3) return "River (Water Color)";
+  if (index === 4) return "River (Outline)";
+  if (index === 5) return "River (Depth Color)";
+
   if (!item || !item.preset) return `Interface Color ${index + 1}`;
   let type = item.vanilla.includes('Outline') ? '(Outline)' : '(Fill)';
   let name = item.preset.replace('preset-worldmap-', '');
@@ -251,7 +255,7 @@ const generatePresets = (baseData: any[]) => {
       else if (presetStr === "preset-worldmap") {
         if (item.vanilla.includes('SeaOutline')) color = p.seaStr;
         else if (item.vanilla.includes('LandOutline')) color = p.landStr;
-        else color = p.sea;
+        else color = p.land;
       }
       else if (presetStr === "preset-worldmap-overfog") {
         if (isOutline) color = p.overfogStr;
@@ -261,7 +265,7 @@ const generatePresets = (baseData: any[]) => {
       else if (presetStr === "preset-worldmap-overfog-sea-outline") color = p.overfogStr;
       else if (presetStr === "preset-worldmap-2") {
         if (item.vanilla.includes('LandOutline')) color = p.landStr;
-        else color = p.sea;
+        else color = p.land2;
       }
       else if (presetStr === "preset-worldmap-sea") color = p.sea;
       else if (presetStr === "preset-worldmap-fog") color = p.fog;

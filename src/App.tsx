@@ -34,8 +34,7 @@ const RAW_DATA = [
   {"mod": "#802020", "preset": "preset-worldmap-wanted-region", "vanilla": "_originalColorTint: color, #290303ff;"},
   {"mod": "#290303", "preset": "preset-worldmap-restricted-area-town", "vanilla": "_originalColorTint: color, #802020ff;"},
   {"mod": "#802020", "preset": "preset-worldmap-restricted-area-gameplay-trigger", "vanilla": "_originalColorTint: color, #802020ff;"},
-  {"mod": "#ffffff", "preset": "preset-worldmap-faction-region", "vanilla": "_originalColorTint: color, #ffffffff;"},
-  {"mod": "#ffffff", "preset": "preset-worldmap-faction-region-2", "vanilla": "_originalColorTint: color, #ffffffff;"}
+  {"mod": "#ffffff", "preset": "preset-worldmap-faction-region", "vanilla": "_originalColorTint: color, #ffffffff;"}
 ];
 
 const CUSTOM_PALETTES = {
@@ -238,6 +237,69 @@ const extractHex = (str: string) => {
   return match ? match[0] : "#000000";
 };
 
+const getThemeColorForIndex = (p: any, i: number) => {
+  // Logic derived from Vanilla color correlations:
+  // Identical pairs in Vanilla: (3,6), (4,7), (5,8), (12,13), (15,16), (23,24), (29,30), (31,32)
+  switch(i) {
+    case 0: return p.bg;
+    case 1: return p.ui;
+    case 2: return p.danger;
+    
+    // Group: River & Overfog (Shared in Vanilla)
+    case 3: return p.river;
+    case 4: return p.riverStr;
+    case 5: return p.riverDepth;
+    case 6: return p.overfog || p.river;
+    case 7: return p.overfogStr || p.riverStr;
+    case 8: return p.overfogStr || p.riverDepth;
+    
+    // Group: Landmass
+    case 9: return p.land2 || p.land;
+    case 10: return p.landStr;
+    
+    // Group: Sea
+    case 11: return p.sea;
+    
+    // Group: Fog & Boundary (Shared in Vanilla)
+    case 12: return p.fog;
+    case 13: return p.nonePlay || p.fog;
+    
+    // Group: Road & Abyss Outline (Shared in Vanilla)
+    case 14: return p.road;
+    case 15: return p.roadStr;
+    case 16: return p.abyssBorder || p.roadStr;
+    
+    // Group: Mountains
+    case 17: return p.mountain;
+    case 18: return p.mountainStr;
+    
+    // Group: Topography
+    case 19: return p.heightLine;
+    
+    // Group: Zones
+    case 20: return p.faction;
+    case 21: return p.religion;
+    
+    // Group: Abyss & System UI
+    case 22: return p.abyss;
+    case 23: return p.loading;
+    case 24: return p.loading; // Shared with 23 in Vanilla
+    case 25: return p.ui;
+    case 26: return p.fog;
+    case 27: return p.fog2 || p.abyssBorder;
+    
+    // Group: Wanted & Restricted (Shared in Vanilla)
+    case 28: return p.wanted;
+    case 29: return p.restricted;
+    case 30: return p.restricted; // Shared with 29 in Vanilla
+    
+    // Group: Regions (Shared in Vanilla)
+    case 31: return p.faction;
+    
+    default: return p.bg;
+  }
+};
+
 const getLabel = (item: any, index: number) => {
   const labels: Record<number, string> = {
     0: "Map Background",
@@ -282,76 +344,12 @@ const generatePresets = (baseData: any[]) => {
   Object.keys(CUSTOM_PALETTES).forEach(k => presets[k] = []);
 
   baseData.forEach((item, i) => {
-    const isOutline = item.vanilla.includes('Outline') || item.vanilla.includes('str');
     const vanillaHex = extractHex(item.vanilla).toLowerCase();
-    const presetStr = item.preset || "ui";
-    
     presets.Vanilla.push(vanillaHex);
     presets.DarkMode.push(item.mod.toLowerCase());
 
     Object.entries(CUSTOM_PALETTES).forEach(([name, palette]) => {
-      const p = palette as any;
-      let color = p.bg;
-
-      if (i === 0) color = p.bg;
-      else if (i === 1) color = p.ui;
-      else if (i === 2) color = p.danger;
-      else if (i === 3) color = p.river;
-      else if (i === 4) color = p.riverStr;
-      else if (i === 5) color = p.riverDepth;
-      else if (i === 7) color = p.landStr;
-      else if (i === 8) color = p.seaStr;
-      else if (presetStr === "preset-worldmap") {
-        if (item.vanilla.includes('SeaOutline')) color = p.seaStr;
-        else if (item.vanilla.includes('LandOutline')) color = p.landStr;
-        else color = p.land;
-      }
-      else if (presetStr === "preset-worldmap-overfog") {
-        if (isOutline) color = p.overfogStr;
-        else color = p.overfog;
-      }
-      else if (presetStr === "preset-worldmap-land") color = p.land;
-      else if (presetStr === "preset-worldmap-overfog-sea-outline") color = p.overfogStr;
-      else if (presetStr === "preset-worldmap-2") {
-        if (item.vanilla.includes('LandOutline')) color = p.landStr;
-        else color = p.land2;
-      }
-      else if (presetStr === "preset-worldmap-sea") color = p.sea;
-      else if (presetStr === "preset-worldmap-fog") color = p.fog;
-      else if (presetStr === "preset-worldmap-none-play-region") color = p.nonePlay;
-      else if (presetStr.includes('road')) color = isOutline ? p.roadStr : p.road;
-      else if (presetStr.includes('mountain')) color = isOutline ? p.mountainStr : p.mountain;
-      else if (presetStr === "preset-worldmap-height-line") color = p.heightLine;
-      else if (presetStr.includes('faction')) {
-        color = presetStr.includes('2') ? p.faction2 : p.faction;
-      }
-      else if (presetStr.includes('religion')) color = p.religion;
-      else if (presetStr.includes('wanted')) color = p.wanted;
-      else if (presetStr.includes('restricted')) {
-        color = presetStr.includes('2') ? p.danger : p.restricted;
-      }
-      else if (presetStr.includes('abyss')) {
-        if (presetStr.includes('bg')) {
-            color = isOutline ? p.abyssBorder : p.abyss;
-        } else if (presetStr.includes('loading')) {
-            color = p.loading;
-        } else if (presetStr.includes('border')) {
-            color = p.abyssBorder;
-        } else if (presetStr.includes('fog')) {
-            color = presetStr.includes('2') ? p.fog2 : p.fog;
-        } else if (presetStr.includes('2')) {
-            color = p.abyss2;
-        } else {
-            color = p.abyss;
-        }
-      }
-      else if (presetStr.includes('loading')) {
-        color = presetStr.includes('2') ? p.ui : p.loading;
-      }
-      else if (presetStr === "ui") color = p.ui;
-      else if (isOutline) color = p.landStr;
-
-      presets[name].push(color);
+      presets[name].push(getThemeColorForIndex(palette, i));
     });
   });
   return presets;

@@ -114,7 +114,7 @@ const PRESETS = (() => {
 
 export default function App() {
   const [colors, setColors] = useState(PRESETS.Vanilla), [preset, setPreset] = useState('Vanilla'), [hist, setHist] = useState<string[][]>([]), [redo, setRedo] = useState<string[][]>([]);
-  const [collapsed, setCollapsed] = useState<Record<number, boolean>>({});
+  const [collapsed, setCollapsed] = useState<Record<number, boolean>>(GROUPS.reduce((acc, _, i) => ({ ...acc, [i]: true }), {}));
   const isChg = useRef(false), fIn = useRef<HTMLInputElement>(null);
 
   const upd = (c: string[], push = 1) => { if (push) { setHist(h => [...h.slice(-9), colors]); setRedo([]); } setColors(c); setPreset('Custom'); };
@@ -167,100 +167,203 @@ export default function App() {
           <button onClick={exp} className="flex items-center gap-3 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-base font-bold rounded-xl shadow-lg transition-all active:scale-95"><Upload className="w-6 h-6" />Export "colors.json"</button>
         </div>
       </header>
-
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-[600px] flex-shrink-0 flex flex-col border-r border-[#30363d] overflow-y-auto custom-scrollbar p-5 gap-6 bg-[#0d1117]">
-          {GROUPS.map((g, gi) => {
-            const grouped: { label: string, items: { idx: number, sub: string }[] }[] = [];
-            const seen = new Set<string>();
-            
-            g.indices.forEach(idx => {
-              const fullLabel = LBLS[idx];
-              const match = fullLabel.match(/^(.*?)\s*\((.*)\)$/);
-              const groupLabel = match ? match[1] : fullLabel;
-              
-              if (seen.has(groupLabel)) return;
-              seen.add(groupLabel);
-              
-              const items = g.indices.filter(i => {
-                const l = LBLS[i];
-                const m = l.match(/^(.*?)\s*\((.*)\)$/);
-                return (m ? m[1] : l) === groupLabel;
-              }).map(i => {
-                const l = LBLS[i];
-                const m = l.match(/^(.*?)\s*\((.*)\)$/);
-                return { idx: i, sub: m ? m[2] : "" };
-              }).reverse();
-              
-              grouped.push({ label: groupLabel, items });
-            });
+        <aside className="w-[1100px] flex-shrink-0 flex flex-col border-r border-[#30363d] overflow-y-auto custom-scrollbar p-8 bg-[#0d1117]">
+          <div className="grid grid-cols-2 gap-8">
+            {/* Left Column: ABYSS, FOG, PYWEL */}
+            <div className="flex flex-col gap-8">
+              {[3, 4, 5].map(gi => {
+                const g = GROUPS[gi];
+                const grouped: { label: string, items: { idx: number, sub: string }[] }[] = [];
+                const seen = new Set<string>();
+                
+                g.indices.forEach(idx => {
+                  const fullLabel = LBLS[idx];
+                  const match = fullLabel.match(/^(.*?)\s*\((.*)\)$/);
+                  const groupLabel = match ? match[1] : fullLabel;
+                  
+                  if (seen.has(groupLabel)) return;
+                  seen.add(groupLabel);
+                  
+                  const items = g.indices.filter(i => {
+                    const l = LBLS[i];
+                    const m = l.match(/^(.*?)\s*\((.*)\)$/);
+                    return (m ? m[1] : l) === groupLabel;
+                  }).map(i => {
+                    const l = LBLS[i];
+                    const m = l.match(/^(.*?)\s*\((.*)\)$/);
+                    return { idx: i, sub: m ? m[2] : "" };
+                  }).reverse();
+                  
+                  grouped.push({ label: groupLabel, items });
+                });
 
-            return (
-              <div key={gi} className="flex-shrink-0 bg-[#161b22] border border-[#30363d] rounded-xl shadow-sm overflow-hidden">
-                <button 
-                  onClick={() => setCollapsed(prev => ({ ...prev, [gi]: !prev[gi] }))}
-                  className="w-full bg-[#21262d] px-4 py-2.5 border-b border-[#30363d] flex items-center justify-between group transition-colors hover:bg-[#30363d]"
-                >
-                  <div className="flex items-center gap-3 text-indigo-400">
-                    {g.icon}<h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{g.title}</h2>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${collapsed[gi] ? '-rotate-90' : ''}`} />
-                </button>
-                <AnimatePresence initial={false}>
-                  {!collapsed[gi] && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      className="overflow-hidden"
+                return (
+                  <div key={gi} className="flex-shrink-0 bg-[#161b22] border border-[#30363d] rounded-xl shadow-sm overflow-hidden">
+                    <button 
+                      onClick={() => setCollapsed(prev => ({ ...prev, [gi]: !prev[gi] }))}
+                      className="w-full bg-[#21262d] px-5 py-4 border-b border-[#30363d] flex items-center justify-between group transition-colors hover:bg-[#30363d]"
                     >
-                      <div className="divide-y divide-[#30363d]">
-                        {grouped.map((group, gridx) => (
-                          <div key={gridx} className="flex items-start p-4 hover:bg-[#21262d]/50 transition-colors gap-4">
-                            <div className="w-24 flex-shrink-0 pt-1">
-                              <span className="text-[13px] font-bold text-gray-200 leading-tight block">{group.label}</span>
-                            </div>
-                            <div className="flex flex-wrap gap-x-6 gap-y-4 flex-1">
-                              {group.items.map(item => (
-                                <div key={item.idx} className="flex items-center gap-2.5 group/item">
-                                  <div className="relative w-10 h-10 rounded-xl border border-[#30363d] overflow-hidden shadow-inner flex-shrink-0" style={{ backgroundColor: colors[item.idx] }}>
-                                    <input 
-                                      type="color" 
-                                      value={colors[item.idx]} 
-                                      onChange={(e) => {
-                                        let val = e.target.value;
-                                        if (item.idx === 31) {
-                                          const r = parseInt(val.substring(1, 3), 16);
-                                          const g = parseInt(val.substring(3, 5), 16);
-                                          const b = parseInt(val.substring(5, 7), 16);
-                                          const avg = Math.round((r + g + b) / 3).toString(16).padStart(2, '0');
-                                          val = `#${avg}${avg}${avg}`;
-                                        }
-                                        handleC(item.idx, val);
-                                      }} 
-                                      className="absolute inset-0 opacity-0 cursor-pointer scale-[4]" 
-                                    />
-                                  </div>
-                                  <div className="flex flex-col min-w-0">
-                                    <span className="text-[10px] text-gray-400 font-mono uppercase tracking-tight leading-none mb-1">{colors[item.idx]}</span>
-                                    <span className="text-[12px] font-bold text-gray-200 leading-none truncate">
-                                      {item.sub || "Color"} <span className="text-gray-500 font-normal ml-0.5 text-[10px]">#{(item.idx + 1).toString().padStart(2, '0')}</span>
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
+                      <div className="flex items-center gap-4 text-indigo-400">
+                        {React.cloneElement(g.icon as React.ReactElement, { className: "w-5 h-5" })}
+                        <h2 className="text-sm font-black text-gray-300 uppercase tracking-widest">{g.title}</h2>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
+                      <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${collapsed[gi] ? '-rotate-90' : ''}`} />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {!collapsed[gi] && (
+                        <motion.div 
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="divide-y divide-[#30363d]">
+                            {grouped.map((group, gridx) => (
+                              <div key={gridx} className="flex flex-col p-6 hover:bg-[#21262d]/50 transition-colors gap-5">
+                                <div className="flex-shrink-0">
+                                  <span className="text-base font-black text-gray-100 leading-tight block">{group.label}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-x-8 gap-y-6 flex-1">
+                                  {group.items.map(item => (
+                                    <div key={item.idx} className="flex items-center gap-4 group/item">
+                                      <div className="relative w-14 h-14 rounded-2xl border-2 border-[#30363d] overflow-hidden shadow-xl flex-shrink-0" style={{ backgroundColor: colors[item.idx] }}>
+                                        <input 
+                                          type="color" 
+                                          value={colors[item.idx]} 
+                                          onChange={(e) => {
+                                            let val = e.target.value;
+                                            if (item.idx === 31) {
+                                              const r = parseInt(val.substring(1, 3), 16);
+                                              const g = parseInt(val.substring(3, 5), 16);
+                                              const b = parseInt(val.substring(5, 7), 16);
+                                              const avg = Math.round((r + g + b) / 3).toString(16).padStart(2, '0');
+                                              val = `#${avg}${avg}${avg}`;
+                                            }
+                                            handleC(item.idx, val);
+                                          }} 
+                                          className="absolute inset-0 opacity-0 cursor-pointer scale-[5]" 
+                                        />
+                                      </div>
+                                      <div className="flex flex-col min-w-0">
+                                        <span className="text-xs text-gray-500 font-mono uppercase tracking-tight leading-none mb-1.5">{colors[item.idx]}</span>
+                                        <span className="text-sm font-bold text-gray-200 leading-none truncate">
+                                          {item.sub || "Color"} <span className="text-gray-500 font-normal ml-1 text-xs">#{(item.idx + 1).toString().padStart(2, '0')}</span>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Right Column: INTERFACE, FACTIONS MENU, UNKNOWN EFFECTS */}
+            <div className="flex flex-col gap-8">
+              {[2, 1, 0].map(gi => {
+                const g = GROUPS[gi];
+                const grouped: { label: string, items: { idx: number, sub: string }[] }[] = [];
+                const seen = new Set<string>();
+                
+                g.indices.forEach(idx => {
+                  const fullLabel = LBLS[idx];
+                  const match = fullLabel.match(/^(.*?)\s*\((.*)\)$/);
+                  const groupLabel = match ? match[1] : fullLabel;
+                  
+                  if (seen.has(groupLabel)) return;
+                  seen.add(groupLabel);
+                  
+                  const items = g.indices.filter(i => {
+                    const l = LBLS[i];
+                    const m = l.match(/^(.*?)\s*\((.*)\)$/);
+                    return (m ? m[1] : l) === groupLabel;
+                  }).map(i => {
+                    const l = LBLS[i];
+                    const m = l.match(/^(.*?)\s*\((.*)\)$/);
+                    return { idx: i, sub: m ? m[2] : "" };
+                  }).reverse();
+                  
+                  grouped.push({ label: groupLabel, items });
+                });
+
+                return (
+                  <div key={gi} className="flex-shrink-0 bg-[#161b22] border border-[#30363d] rounded-xl shadow-sm overflow-hidden">
+                    <button 
+                      onClick={() => setCollapsed(prev => ({ ...prev, [gi]: !prev[gi] }))}
+                      className="w-full bg-[#21262d] px-5 py-4 border-b border-[#30363d] flex items-center justify-between group transition-colors hover:bg-[#30363d]"
+                    >
+                      <div className="flex items-center gap-4 text-indigo-400">
+                        {React.cloneElement(g.icon as React.ReactElement, { className: "w-5 h-5" })}
+                        <h2 className="text-sm font-black text-gray-300 uppercase tracking-widest">{g.title}</h2>
+                      </div>
+                      <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${collapsed[gi] ? '-rotate-90' : ''}`} />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {!collapsed[gi] && (
+                        <motion.div 
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="divide-y divide-[#30363d]">
+                            {grouped.map((group, gridx) => (
+                              <div key={gridx} className="flex flex-col p-6 hover:bg-[#21262d]/50 transition-colors gap-5">
+                                <div className="flex-shrink-0">
+                                  <span className="text-base font-black text-gray-100 leading-tight block">{group.label}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-x-8 gap-y-6 flex-1">
+                                  {group.items.map(item => (
+                                    <div key={item.idx} className="flex items-center gap-4 group/item">
+                                      <div className="relative w-14 h-14 rounded-2xl border-2 border-[#30363d] overflow-hidden shadow-xl flex-shrink-0" style={{ backgroundColor: colors[item.idx] }}>
+                                        <input 
+                                          type="color" 
+                                          value={colors[item.idx]} 
+                                          onChange={(e) => {
+                                            let val = e.target.value;
+                                            if (item.idx === 31) {
+                                              const r = parseInt(val.substring(1, 3), 16);
+                                              const g = parseInt(val.substring(3, 5), 16);
+                                              const b = parseInt(val.substring(5, 7), 16);
+                                              const avg = Math.round((r + g + b) / 3).toString(16).padStart(2, '0');
+                                              val = `#${avg}${avg}${avg}`;
+                                            }
+                                            handleC(item.idx, val);
+                                          }} 
+                                          className="absolute inset-0 opacity-0 cursor-pointer scale-[5]" 
+                                        />
+                                      </div>
+                                      <div className="flex flex-col min-w-0">
+                                        <span className="text-xs text-gray-500 font-mono uppercase tracking-tight leading-none mb-1.5">{colors[item.idx]}</span>
+                                        <span className="text-sm font-bold text-gray-200 leading-none truncate">
+                                          {item.sub || "Color"} <span className="text-gray-500 font-normal ml-1 text-xs">#{(item.idx + 1).toString().padStart(2, '0')}</span>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </aside>
+
 
         <main className="flex-1 relative bg-[#090c10] overflow-hidden" style={{ backgroundColor: colors[0] }}>
           <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-[#161b22]/80 backdrop-blur px-3 py-1.5 rounded-full border border-[#30363d] text-[9px] font-bold uppercase tracking-widest">

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Download, Upload, Globe, Map as MapIcon, Palette, Shield, Wind, Monitor, ChevronDown, Check, Undo, Redo } from 'lucide-react';
+import { Download, Upload, Globe, Palette, Shield, Wind, Monitor, ChevronDown, Check, Undo, Redo, Layers, Mountain } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 // --- DADOS INICIAIS ---
 const RAW_DATA = [
@@ -58,39 +59,52 @@ const CUSTOM_PALETTES = {
   HollowKnight: { bg: "#2c3140", sea: "#1a2a1a", seaStr: "#1a1c23", land: "#3d2b1f", land2: "#2a1a0a", landStr: "#8b9bb4", mountain: "#3d3d3d", mountainStr: "#1a1c23", road: "#8b9bb4", roadStr: "#1a1c23", river: "#00ffff", riverStr: "#7289da", riverDepth: "#16171d", faction: "#4a5462", faction2: "#202433", religion: "#8b9bb4", wanted: "#803040", restricted: "#0b0c10", danger: "#803040", fog: "#0b0c10", fog2: "#12141c", abyss: "#000000", abyss2: "#1a1c23", abyssBorder: "#8b9bb4", overfog: "#2c3140", overfogStr: "#8b9bb4", heightLine: "#8b9bb4", nonePlay: "#2c3140", loading: "#12141c", ui: "#8b9bb4" }
 };
 
+const FloatingIsland = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 3L4 12h16L12 3z" fill="currentColor" fillOpacity="0.2" />
+    <path d="M2 12h20" strokeWidth="3" stroke="currentColor" />
+    <path d="M4 12l4 7 4-3 4 5 4-9" fill="currentColor" fillOpacity="0.1" />
+  </svg>
+);
+
 // --- GRUPOS LÓGICOS DE CORES ---
 const GROUPS = [
   {
-    title: "Environment (Base)",
+    title: "UNKNOWN EFFECTS",
     icon: <Globe className="w-4 h-4" />,
-    indices: [0, 3, 4, 5, 6, 7, 8, 11, 13]
+    indices: [7, 8, 19, 25, 16]
   },
   {
-    title: "Terrain & Relief",
-    icon: <MapIcon className="w-4 h-4" />,
-    indices: [9, 10, 12, 14, 15, 17, 18, 19]
-  },
-  {
-    title: "Zones & Factions",
+    title: "Factions Menu",
     icon: <Shield className="w-4 h-4" />,
-    indices: [20, 21, 28, 29, 30, 31]
+    indices: [31, 20, 21, 28, 30, 29]
   },
   {
-    title: "Fog & Abyss",
-    icon: <Wind className="w-4 h-4" />,
-    indices: [16, 22, 26, 27]
-  },
-  {
-    title: "Interface & Loading",
+    title: "Interface",
     icon: <Monitor className="w-4 h-4" />,
-    indices: [1, 2, 23, 24, 25]
+    indices: [2, 1, 24, 23]
+  },
+  {
+    title: "Abyss",
+    icon: <FloatingIsland className="w-4 h-4" />,
+    indices: [27, 26, 22, 0]
+  },
+  {
+    title: "Fog",
+    icon: <Wind className="w-4 h-4" />,
+    indices: [6, 12]
+  },
+  {
+    title: "PYWEL",
+    icon: <Globe className="w-4 h-4" />,
+    indices: [13, 10, 9, 18, 17, 15, 14, 4, 5, 3, 11]
   }
 ];
 
 // --- UTILS ---
 const hex = (s: string) => s.match(/#[0-9a-fA-F]{6}/)?.[0] || "#000";
 const T_MAP = ['bg','ui','danger','river','riverStr','riverDepth',p=>p.overfog||p.river,p=>p.overfogStr||p.riverStr,p=>p.overfogStr||p.riverDepth,p=>p.land2||p.land,'landStr','sea','fog',p=>p.nonePlay||p.fog,'road','roadStr',p=>p.abyssBorder||p.roadStr,'mountain','mountainStr','heightLine','faction','religion','abyss','loading','loading','ui','fog',p=>p.fog2||p.abyssBorder,'wanted','restricted','restricted','faction'];
-const LBLS = ["Map BG","Map BG","UI Accent (Secondary)","River (Water)","River (Outline)","River (Flow/Depth)","Overfog (Fill)","Overfog (Land Grid)","Overfog (Sea Grid)","Hill (Base)","Hill (Outline)","Ground (Base)","Atmospheric Fog","Map Boundary","Road (Surface)","Road (Outline)","Abyss (Outline)","Mountain (Fill)","Mountain (Peak)","Topography (Grid)","Faction Zone","Religious Zone","Abyss (Core)","Abyss (Loading)","System UI (Base)","System UI (Bar)","Abyss (Inner Fog)","Abyss (Outer Mist)","Wanted Area","Restricted (Town)","Restricted (Trigger)","Faction Region"];
+const LBLS = ["Abyss (Tint)","Map Crosshair (Normal)","Map Crosshair (Hover)","Water (Fill)","Water (Outline)","Water (Depth)","Fog of War (Water)","_mapLandOutlineColor","_mapSeaOutlineColor","High Ground (Fill)","High Ground (Outline)","Ground (Fill)","Fog of War (Ground)","Map Boundary","Road (Fill)","Road (Outline)","-worldmap-abyss-fog","Slopes and Farmland (Fill)","Slopes and Farmland (Outline)","-worldmap-height-line","Faction Zone Overlay","Religious Zone Overlay","Abyss (Hexagons)","Abyss Transition","Map Menu Transition","-worldmap-loading-2","Abyss Fog (Inner)","Abyss Fog (Outer)","Wanted Area","Restricted (Town)","Restricted (Trigger)","Faction Region Brightness"];
 const VARS = ["bg","ui-1","ui-2","river-water","river-outline","river-depth","overfog","overfog-land-outline","overfog-sea-outline","land","land-outline","sea","fog","none-play","road","road-outline","abyss-outline","mountain","mountain-outline","height-line","faction","religion","abyss","abyss-loading","loading","loading-2","abyss-fog","abyss-border-fog","wanted","restricted-town","restricted-trigger","faction-region"];
 const PRESETS = (() => {
   const r: any = { Vanilla: RAW_DATA.map(d => hex(d.vanilla).toLowerCase()), DarkMode: RAW_DATA.map(d => d.mod.toLowerCase()) };
@@ -100,6 +114,7 @@ const PRESETS = (() => {
 
 export default function App() {
   const [colors, setColors] = useState(PRESETS.Vanilla), [preset, setPreset] = useState('Vanilla'), [hist, setHist] = useState<string[][]>([]), [redo, setRedo] = useState<string[][]>([]);
+  const [collapsed, setCollapsed] = useState<Record<number, boolean>>({});
   const isChg = useRef(false), fIn = useRef<HTMLInputElement>(null);
 
   const upd = (c: string[], push = 1) => { if (push) { setHist(h => [...h.slice(-9), colors]); setRedo([]); } setColors(c); setPreset('Custom'); };
@@ -154,30 +169,97 @@ export default function App() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-[420px] flex-shrink-0 flex flex-col border-r border-[#30363d] overflow-y-auto custom-scrollbar p-5 gap-6 bg-[#0d1117]">
-          {GROUPS.map((g, gi) => (
-            <div key={gi} className="flex-shrink-0 bg-[#161b22] border border-[#30363d] rounded-xl shadow-sm overflow-hidden">
-              <div className="bg-[#21262d] px-4 py-2.5 border-b border-[#30363d] flex items-center gap-3 text-indigo-400">
-                {g.icon}<h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{g.title}</h2>
-              </div>
-              <div className="p-1.5">
-                {g.indices.map(idx => (
-                  <div key={idx} className="flex items-center justify-between px-3 py-2 hover:bg-[#21262d] rounded-lg group gap-4 transition-colors">
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="text-[12px] font-semibold text-gray-200 leading-snug">{LBLS[idx]}</span>
-                      <span className="text-[10px] text-gray-500 font-mono mt-0.5">Index #{idx.toString().padStart(2, '0')}</span>
-                    </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="text-[10px] text-gray-400 font-mono uppercase tracking-tight">{colors[idx]}</span>
-                      <div className="relative w-8 h-8 rounded-md border border-[#30363d] overflow-hidden shadow-inner" style={{ backgroundColor: colors[idx] }}>
-                        <input type="color" value={colors[idx]} onChange={(e) => handleC(idx, e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer scale-[3]" />
-                      </div>
-                    </div>
+        <aside className="w-[600px] flex-shrink-0 flex flex-col border-r border-[#30363d] overflow-y-auto custom-scrollbar p-5 gap-6 bg-[#0d1117]">
+          {GROUPS.map((g, gi) => {
+            const grouped: { label: string, items: { idx: number, sub: string }[] }[] = [];
+            const seen = new Set<string>();
+            
+            g.indices.forEach(idx => {
+              const fullLabel = LBLS[idx];
+              const match = fullLabel.match(/^(.*?)\s*\((.*)\)$/);
+              const groupLabel = match ? match[1] : fullLabel;
+              
+              if (seen.has(groupLabel)) return;
+              seen.add(groupLabel);
+              
+              const items = g.indices.filter(i => {
+                const l = LBLS[i];
+                const m = l.match(/^(.*?)\s*\((.*)\)$/);
+                return (m ? m[1] : l) === groupLabel;
+              }).map(i => {
+                const l = LBLS[i];
+                const m = l.match(/^(.*?)\s*\((.*)\)$/);
+                return { idx: i, sub: m ? m[2] : "" };
+              }).reverse();
+              
+              grouped.push({ label: groupLabel, items });
+            });
+
+            return (
+              <div key={gi} className="flex-shrink-0 bg-[#161b22] border border-[#30363d] rounded-xl shadow-sm overflow-hidden">
+                <button 
+                  onClick={() => setCollapsed(prev => ({ ...prev, [gi]: !prev[gi] }))}
+                  className="w-full bg-[#21262d] px-4 py-2.5 border-b border-[#30363d] flex items-center justify-between group transition-colors hover:bg-[#30363d]"
+                >
+                  <div className="flex items-center gap-3 text-indigo-400">
+                    {g.icon}<h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{g.title}</h2>
                   </div>
-                ))}
+                  <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${collapsed[gi] ? '-rotate-90' : ''}`} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {!collapsed[gi] && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="divide-y divide-[#30363d]">
+                        {grouped.map((group, gridx) => (
+                          <div key={gridx} className="flex items-start p-4 hover:bg-[#21262d]/50 transition-colors gap-4">
+                            <div className="w-24 flex-shrink-0 pt-1">
+                              <span className="text-[13px] font-bold text-gray-200 leading-tight block">{group.label}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-x-6 gap-y-4 flex-1">
+                              {group.items.map(item => (
+                                <div key={item.idx} className="flex items-center gap-2.5 group/item">
+                                  <div className="relative w-10 h-10 rounded-xl border border-[#30363d] overflow-hidden shadow-inner flex-shrink-0" style={{ backgroundColor: colors[item.idx] }}>
+                                    <input 
+                                      type="color" 
+                                      value={colors[item.idx]} 
+                                      onChange={(e) => {
+                                        let val = e.target.value;
+                                        if (item.idx === 31) {
+                                          const r = parseInt(val.substring(1, 3), 16);
+                                          const g = parseInt(val.substring(3, 5), 16);
+                                          const b = parseInt(val.substring(5, 7), 16);
+                                          const avg = Math.round((r + g + b) / 3).toString(16).padStart(2, '0');
+                                          val = `#${avg}${avg}${avg}`;
+                                        }
+                                        handleC(item.idx, val);
+                                      }} 
+                                      className="absolute inset-0 opacity-0 cursor-pointer scale-[4]" 
+                                    />
+                                  </div>
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="text-[10px] text-gray-400 font-mono uppercase tracking-tight leading-none mb-1">{colors[item.idx]}</span>
+                                    <span className="text-[12px] font-bold text-gray-200 leading-none truncate">
+                                      {item.sub || "Color"} <span className="text-gray-500 font-normal ml-0.5 text-[10px]">#{(item.idx + 1).toString().padStart(2, '0')}</span>
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </aside>
 
         <main className="flex-1 relative bg-[#090c10] overflow-hidden" style={{ backgroundColor: colors[0] }}>

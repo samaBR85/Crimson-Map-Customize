@@ -70,7 +70,7 @@ const FloatingIsland = ({ className }: { className?: string }) => (
 // --- GRUPOS LÓGICOS DE CORES ---
 const GROUPS = [
   {
-    title: "UNKNOWN EFFECTS",
+    title: "Unkown Outcomes",
     icon: <Globe className="w-4 h-4" />,
     indices: [7, 8, 19, 25, 16]
   },
@@ -168,8 +168,8 @@ export default function App() {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-[1100px] flex-shrink-0 flex flex-col border-r border-[#30363d] overflow-y-auto custom-scrollbar p-8 bg-[#0d1117]">
-          <div className="grid grid-cols-2 gap-8">
+        <aside className="w-[780px] flex-shrink-0 flex flex-col border-r border-[#30363d] overflow-y-auto custom-scrollbar p-5 bg-[#0d1117]">
+          <div className="grid grid-cols-2 gap-5">
             {/* Left Column: ABYSS, FOG, PYWEL */}
             <div className="flex flex-col gap-8">
               {[3, 4, 5].map(gi => {
@@ -221,11 +221,11 @@ export default function App() {
                         >
                           <div className="divide-y divide-[#30363d]">
                             {grouped.map((group, gridx) => (
-                              <div key={gridx} className="flex flex-col p-6 hover:bg-[#21262d]/50 transition-colors gap-5">
+                              <div key={gridx} className="flex flex-col p-4 hover:bg-[#21262d]/50 transition-colors gap-4">
                                 <div className="flex-shrink-0">
-                                  <span className="text-base font-black text-gray-100 leading-tight block">{group.label}</span>
+                                  <span className="text-sm font-black text-gray-100 leading-tight block">{group.label}</span>
                                 </div>
-                                <div className="flex flex-wrap gap-x-8 gap-y-6 flex-1">
+                                <div className="flex flex-wrap gap-x-6 gap-y-4 flex-1">
                                   {group.items.map(item => (
                                     <div key={item.idx} className="flex items-center gap-4 group/item">
                                       <div className="relative w-14 h-14 rounded-2xl border-2 border-[#30363d] overflow-hidden shadow-xl flex-shrink-0" style={{ backgroundColor: colors[item.idx] }}>
@@ -317,11 +317,11 @@ export default function App() {
                         >
                           <div className="divide-y divide-[#30363d]">
                             {grouped.map((group, gridx) => (
-                              <div key={gridx} className="flex flex-col p-6 hover:bg-[#21262d]/50 transition-colors gap-5">
+                              <div key={gridx} className="flex flex-col p-4 hover:bg-[#21262d]/50 transition-colors gap-4">
                                 <div className="flex-shrink-0">
-                                  <span className="text-base font-black text-gray-100 leading-tight block">{group.label}</span>
+                                  <span className="text-sm font-black text-gray-100 leading-tight block">{group.label}</span>
                                 </div>
-                                <div className="flex flex-wrap gap-x-8 gap-y-6 flex-1">
+                                <div className="flex flex-wrap gap-x-6 gap-y-4 flex-1">
                                   {group.items.map(item => (
                                     <div key={item.idx} className="flex items-center gap-4 group/item">
                                       <div className="relative w-14 h-14 rounded-2xl border-2 border-[#30363d] overflow-hidden shadow-xl flex-shrink-0" style={{ backgroundColor: colors[item.idx] }}>

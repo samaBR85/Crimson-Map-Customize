@@ -1,5 +1,5 @@
 {
   "name": "Crimson Map Color Customizer",
-  "description": "A visual tool to customize map colors for Crimson Desert and generate colors.json configuration files.",
+  "description": "A visual tool that lets you customize all Map Menu related color palette and generates \"colors.json\" files to be used with Dark Mode Map by TheLastGunslinger9.",
   "requestFramePermissions": []
 }
